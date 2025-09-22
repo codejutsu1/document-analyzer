@@ -2,12 +2,12 @@
 
 namespace App\Services\Llm\Driver;
 
+use App\Contracts\InteractWithLlm;
 use App\Models\User;
-use Prism\Prism\Prism;
-use App\InteractWithLlm;
-use Prism\Prism\Enums\Provider;
 use Illuminate\Support\Facades\Log;
+use Prism\Prism\Enums\Provider;
 use Prism\Prism\Exceptions\PrismException;
+use Prism\Prism\Prism;
 
 class GeminiDriver implements InteractWithLlm
 {
@@ -21,21 +21,23 @@ class GeminiDriver implements InteractWithLlm
             ->asText()->text;
     }
 
-    public function embeddings(?string $path = null, ?array $texts = null): array
+    public function embed(?string $texts = null, ?string $path = null): array
     {
+        Log::info('reached here');
+
         try {
             $response = Prism::embeddings()
                 ->using(Provider::Gemini, 'gemini-embedding-001')
-                ->fromArray($texts)
-                // ->withClientOptions(['timeout' => 30]) 
-                ->withClientRetry(3, 100) 
+                ->fromInput($texts)
+                // ->withClientOptions(['timeout' => 30])
+                ->withClientRetry(3, 100)
                 ->withProviderOptions(['taskType' => 'RETRIEVAL_DOCUMENT'])
                 ->asEmbeddings();
 
-            return $response->embeddings;
-        }catch (PrismException $e) {
+            return $response->embeddings[0]->embedding;
+        } catch (PrismException $e) {
             Log::error('Embeddings generation failed:', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return [];

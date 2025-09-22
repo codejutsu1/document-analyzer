@@ -2,9 +2,8 @@
 
 namespace App\Services\Pdf;
 
-use Spatie\PdfToText\Pdf;
-use Smalot\PdfParser\Parser;
 use Illuminate\Support\Facades\Storage;
+use Smalot\PdfParser\Parser;
 
 class PdfService
 {
@@ -25,18 +24,17 @@ class PdfService
 
     public function getPdf(string $filename): string
     {
-        $pdf = str_ends_with($filename, '.pdf') 
-                    ? $filename 
-                    : $filename . '.pdf';
+        $pdf = str_ends_with($filename, '.pdf')
+                    ? $filename
+                    : $filename.'.pdf';
 
-        return Storage::disk('public')->path('pdfs/' . $pdf);
+        return Storage::disk('public')->path('pdfs/'.$pdf);
     }
 
     public function getPdfText(string $filename): string
     {
-        $parser = new Parser();
+        $parser = new Parser;
         $pdf = $parser->parseFile($this->getPdf($filename));
-
 
         return $pdf->getText();
     }
@@ -47,6 +45,6 @@ class PdfService
     //     int $overlap = 500,
     // ): array
     // {
-    //     
+    //
     // }
 }

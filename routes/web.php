@@ -1,11 +1,8 @@
 <?php
 
-use App\Facades\Llm;
-use Inertia\Inertia;
-use Smalot\PdfParser\Parser;
 use App\Jobs\ProcessDocumentJob;
-use App\Services\Pdf\PdfService;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -17,8 +14,8 @@ Route::get('dashboard', function () {
 
 Route::get('pdf', function () {
     ProcessDocumentJob::dispatch('bill');
-    
-    dd("live");
+
+    dd('live');
 });
 
 require __DIR__.'/settings.php';

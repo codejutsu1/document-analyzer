@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    'vector_database' => [
+        'driver' => env('VECTOR_DATABASE_DRIVER', 'qdrant'),
+    ],
+
+    'qdrant' => [
+        'url' => env('QDRANT_URL'),
+        'api_key' => env('QDRANT_API_KEY'),
+        'collection_name' => env('QDRANT_COLLECTION_NAME', 'document_analyzer'),
+    ],
+
 ];

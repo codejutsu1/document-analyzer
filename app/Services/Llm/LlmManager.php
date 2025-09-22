@@ -2,7 +2,7 @@
 
 namespace App\Services\Llm;
 
-use Prism\Prism\Providers\OpenAI\OpenAI;
+use App\Contracts\InteractWithLlm;
 use App\Services\Llm\Driver\GeminiDriver;
 use App\Services\Llm\Driver\OpenAIDriver;
 use Illuminate\Support\Manager;
@@ -14,12 +14,12 @@ class LlmManager extends Manager
         return config('app.services.llm.driver', 'gemini');
     }
 
-    public function createChatgptDriver()
+    public function createChatgptDriver(): InteractWithLlm
     {
         return new OpenAIDriver;
     }
 
-    public function createGeminiDriver()
+    public function createGeminiDriver(): InteractWithLlm
     {
         return new GeminiDriver;
     }

@@ -16,7 +16,9 @@
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9",
         "prism-php/prism": "^0.89.0",
+        "saloonphp/laravel-plugin": "^3.6",
         "smalot/pdfparser": "^2.12",
+        "spatie/laravel-data": "^4.17",
         "spatie/pdf-to-text": "^1.54"
     },
     "require-dev": {

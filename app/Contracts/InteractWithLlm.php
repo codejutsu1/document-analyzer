@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Contracts;
 
 use App\Models\User;
 
@@ -8,5 +8,5 @@ interface InteractWithLlm
 {
     public function prompt(array $messages, User $user): string;
 
-    public function embeddings(?string $path = null, ?array $texts = null): array;
+    public function embed(?string $texts = null, ?string $path = null): array;
 }
