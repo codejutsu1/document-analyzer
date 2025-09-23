@@ -13,6 +13,10 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('files', function () {
+    return Inertia::render('File');
+})->middleware(['auth', 'verified'])->name('file');
+
 Route::get('pdf', function () {
     // ProcessDocumentJob::dispatch('bill');
     ProcessUserQueryJob::dispatch('Is Benefit of kind part of pdf?');
