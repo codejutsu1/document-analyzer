@@ -2,13 +2,15 @@
 
 namespace App\Http\Integrations\Qdrant\Requests;
 
-use App\Services\VectorDatabase\Data\QdrantSearchPayload;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
+use Saloon\Contracts\Body\HasBody;
+use Illuminate\Support\Facades\Log;
 use Saloon\Traits\Body\HasJsonBody;
 use Saloon\Traits\Plugins\AcceptsJson;
+use App\Services\VectorDatabase\Data\QdrantSearchPayload;
 
-class SearchRequest extends Request
+class QueryRequest extends Request implements HasBody
 {
     use AcceptsJson;
     use HasJsonBody;
@@ -29,6 +31,8 @@ class SearchRequest extends Request
     {
         $collectionName = config('services.qdrant.collection_name');
 
+        Log::info('Collection name: '.$collectionName);
+
         return "/$collectionName/points/search";
     }
 
@@ -37,6 +41,7 @@ class SearchRequest extends Request
         return [
             'vector' => $this->qdrantPayload->vector,
             'limit' => $this->qdrantPayload->limit,
+            'with_payload' => true,
         ];
     }
 }

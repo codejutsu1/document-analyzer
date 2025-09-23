@@ -1,8 +1,9 @@
 <?php
 
-use App\Jobs\ProcessDocumentJob;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Jobs\ProcessDocumentJob;
+use App\Jobs\ProcessUserQueryJob;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -13,7 +14,8 @@ Route::get('dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('pdf', function () {
-    ProcessDocumentJob::dispatch('bill');
+    // ProcessDocumentJob::dispatch('bill');
+    ProcessUserQueryJob::dispatch('Is Benefit of kind part of pdf?');
 
     dd('live');
 });

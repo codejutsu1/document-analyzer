@@ -13,11 +13,15 @@ class GeminiDriver implements InteractWithLlm
 {
     public function __construct() {}
 
-    public function prompt(array $prismMessages, User $user): string
+    public function prompt(?array $prismMessages = [], ?User $user = null, ?string $prompt = null): string
     {
         return Prism::text()
             ->using(Provider::Gemini, 'gemini-2.5-flash')
-            ->withMessages($prismMessages)
+            ->withSystemPrompt('You are a helpful assistant that can answer questions about legal documents provided.')
+            // ->withMessages($prismMessages)
+            ->withPrompt($prompt)
+            ->withMaxTokens(512)
+            ->usingTemperature(0.0)
             ->asText()->text;
     }
 

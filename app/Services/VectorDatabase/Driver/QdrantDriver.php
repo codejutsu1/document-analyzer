@@ -2,11 +2,13 @@
 
 namespace App\Services\VectorDatabase\Driver;
 
+use Illuminate\Support\Facades\Log;
 use App\Contracts\InteractWithVectorDatabase;
 use App\Http\Integrations\Qdrant\QdrantConnector;
+use App\Http\Integrations\Qdrant\Requests\QueryRequest;
 use App\Http\Integrations\Qdrant\Requests\UpsertRequest;
+use App\Services\VectorDatabase\Data\QdrantSearchPayload;
 use App\Services\VectorDatabase\Data\QdrantUpsertPayload;
-use Illuminate\Support\Facades\Log;
 
 class QdrantDriver implements InteractWithVectorDatabase
 {
@@ -43,8 +45,25 @@ class QdrantDriver implements InteractWithVectorDatabase
         ]);
     }
 
-    public function search(array $data): array
+    public function search(QdrantSearchPayload $data): array
     {
-        return [];
+        Log::info('Reached here driver');
+
+        $response = $this->connector->send(new QueryRequest($data));
+
+        if($response->failed()) {
+            Log::error('Vector database search failed', [
+                'status' => $response->status(),
+                // 'body' => $response->body(),
+                // 'json' => $response->json(),
+            ]);
+        }
+
+        Log::info('Vector database search response', [
+            'status' => $response->status(),
+            'json' => $response->json(),
+        ]);
+
+        return $response->json()['result'];
     }
 }
