@@ -9,13 +9,21 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+    
+    Route::get('files', function () {
+        return Inertia::render('File');
+    })->name('file');
 
-Route::get('files', function () {
-    return Inertia::render('File');
-})->middleware(['auth', 'verified'])->name('file');
+    Route::get('files/show', function () {
+        return Inertia::render('Show');
+    })->name('show');
+
+});
+
 
 Route::get('pdf', function () {
     // ProcessDocumentJob::dispatch('bill');
