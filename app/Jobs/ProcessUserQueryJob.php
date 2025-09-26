@@ -4,10 +4,10 @@ namespace App\Jobs;
 
 use App\Facades\Llm;
 use App\Facades\VectorDatabase;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Services\VectorDatabase\Data\QdrantSearchPayload;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
 
 class ProcessUserQueryJob implements ShouldQueue
 {
@@ -18,8 +18,7 @@ class ProcessUserQueryJob implements ShouldQueue
      */
     public function __construct(
         protected string $query,
-    )
-    {}
+    ) {}
 
     /**
      * Execute the job.
@@ -27,7 +26,7 @@ class ProcessUserQueryJob implements ShouldQueue
     public function handle(): void
     {
         $embedResponse = Llm::embed(texts: $this->query);
-        
+
         $payload = QdrantSearchPayload::from([
             'vector' => $embedResponse,
             'limit' => 10,
@@ -35,18 +34,17 @@ class ProcessUserQueryJob implements ShouldQueue
 
         $results = VectorDatabase::search($payload);
 
-        $context = "";
+        $context = '';
 
         foreach ($results as $i => $h) {
             $p = $h['payload'];
-            $context .= "---CHUNK {$i}---\n[doc: {$p['doc_id']}, page: {$p['page']}] \n" . $p['text'] . "\n\n";
+            $context .= "---CHUNK {$i}---\n[doc: {$p['doc_id']}, page: {$p['page']}] \n".$p['text']."\n\n";
         }
-
 
         $prompt = "You are an assistant. Use ONLY the documents below and cite sources.\n\nContext:\n{$context}\nUser: {$this->query}\nAnswer:";
 
         $llmResponse = Llm::prompt(prompt: $prompt);
 
-        Log::info("LLM response: " . $llmResponse);
-    }   
+        Log::info('LLM response: '.$llmResponse);
+    }
 }

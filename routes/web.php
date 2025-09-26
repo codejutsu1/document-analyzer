@@ -1,9 +1,9 @@
 <?php
 
-use Inertia\Inertia;
 use App\Jobs\ProcessDocumentJob;
 use App\Jobs\ProcessUserQueryJob;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -13,7 +13,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
-    
+
     Route::get('files', function () {
         return Inertia::render('File');
     })->name('file');
@@ -27,7 +27,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('chat');
 
 });
-
 
 Route::get('pdf', function () {
     // ProcessDocumentJob::dispatch('bill');

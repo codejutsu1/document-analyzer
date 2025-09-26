@@ -2,13 +2,13 @@
 
 namespace App\Http\Integrations\Qdrant\Requests;
 
+use App\Services\VectorDatabase\Data\QdrantSearchPayload;
+use Illuminate\Support\Facades\Log;
+use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
-use Saloon\Contracts\Body\HasBody;
-use Illuminate\Support\Facades\Log;
 use Saloon\Traits\Body\HasJsonBody;
 use Saloon\Traits\Plugins\AcceptsJson;
-use App\Services\VectorDatabase\Data\QdrantSearchPayload;
 
 class QueryRequest extends Request implements HasBody
 {
