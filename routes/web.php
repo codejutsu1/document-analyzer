@@ -22,6 +22,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Show');
     })->name('show');
 
+    Route::get('files/chat', function () {
+        return Inertia::render('Chat');
+    })->name('chat');
+
 });
 
 

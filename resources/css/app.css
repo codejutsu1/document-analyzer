@@ -170,3 +170,36 @@
         @apply bg-background text-foreground;
     }
 }
+
+
+@layer utilities {
+    /* Thin scrollbar */
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+  
+    /* Rounded track */
+    .scrollbar-rounded::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 9999px;
+    }
+  
+    /* Rounded thumb */
+    .scrollbar-rounded::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 9999px;
+    }
+  
+    .scrollbar-rounded::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  
+    /* Firefox support */
+    .scrollbar-thin {
+      scrollbar-width: thin;
+    }
+    .scrollbar-rounded {
+      scrollbar-color: #888 #f1f1f1;
+    }
+  }
