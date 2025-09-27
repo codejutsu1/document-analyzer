@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Enums\FileType;
+use App\Enums\FileStatus;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->string('author')->nullable();
             $table->string('pages')->nullable();
             $table->string('type')->default(FileType::PDF);
+            $table->string('status')->default(FileStatus::PROCESSING);
 
 
             $table->timestamps();

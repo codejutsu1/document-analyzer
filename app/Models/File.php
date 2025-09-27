@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\FileType;
+use App\Enums\FileStatus;
 use App\Traits\HasUuidColumn;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,6 +26,7 @@ class File extends Model
     {
         return [
             'type' => FileType::class,
+            'status' => FileStatus::class,
         ];
     }
 

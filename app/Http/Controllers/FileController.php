@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\File\FileIndexResource;
 use App\Models\File;
 use App\Models\User;
 use Inertia\Inertia;
@@ -18,7 +19,11 @@ class FileController extends Controller
      */
     public function index()
     {
-        return Inertia::render('File');
+        $files = File::whereBelongsTo(Auth::user())->get();
+
+        return Inertia::render('File', [
+            'files' => fn () => FileIndexResource::collection($files),
+        ]);
     }
 
     /**
@@ -51,18 +56,18 @@ class FileController extends Controller
         $file = $request->file('file');
 
         try {
-            // DB::transaction(function () use ($file) {
-            //     /** @var User $user */
-            //     $user = Auth::user();
+            DB::transaction(function () use ($file) {
+                /** @var User $user */
+                $user = Auth::user();
 
-            //    $fileModel = $user->files()->create([
-            //     'path' => $file->store('files', 'public'),
-            //     'size' => round(($file->getSize() / 1024) / 1024, 2),
-            //    ]);
+               $fileModel = $user->files()->create([
+                'path' => $file->store('files', 'public'),
+                'size' => round(($file->getSize() / 1024) / 1024, 2),
+               ]);
 
 
-            //    ProcessFileJob::dispatch($fileModel);
-            // });
+               ProcessFileJob::dispatch($fileModel);
+            });
 
             return redirect()->back()->with('success', 'File uploaded successfully');
         } catch (\Throwable $th) {

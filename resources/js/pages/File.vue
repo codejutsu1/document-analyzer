@@ -18,6 +18,8 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import AppLayout from '@/layouts/AppLayout.vue';
+import { Badge } from '@/components/ui/badge';
+import { Loader2 } from 'lucide-vue-next';
 import { dashboard } from '@/routes';
 import { index, store } from '@/actions/App/Http/Controllers/FileController';
 import { type BreadcrumbItem } from '@/types';
@@ -26,6 +28,10 @@ import { Button } from '@/components/ui/button';
 import { Form, Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+
+defineProps<{
+    files: { data: any[] };
+}>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -47,6 +53,11 @@ const handleFileChange = (event: Event) => {
         file.value = inputFile || null;
     }
     filename.value = inputFile?.name || null;
+};
+
+const removeFile = () => {
+    filename.value = null;
+    file.value = null;
 };
 
 const handleSuccess = (page: any) => {
@@ -142,49 +153,89 @@ const handleError = (page: any) => {
                             <DrawerFooter>
                                 <Button type="submit" :disabled="processing" class="cursor-pointer">Submit</Button>
                                 <DrawerClose>
-                                <Button type="button" variant="outline" class="cursor-pointer">
-                                    Cancel
-                                </Button>
+                                    <Button @click="removeFile" type="button" variant="outline" class="cursor-pointer">
+                                        Cancel
+                                    </Button>
                                 </DrawerClose>
                             </DrawerFooter>
                         </Form>
                     </div>
                 </DrawerContent>       
             </Drawer>
-            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-                <Card>
-                    <CardContent>
-                       <div class="flex gap-x-1 gap-y-2">
-                           <div class="flex items-center w-1/3">
+            <div class="grid auto-rows-min gap-4 md:grid-cols-2">
+                <Card v-for="file in files?.data" :key="file.id" class="flex flex-col justify-between">
+                    <CardContent class="h-full">
+                       <div class="flex gap-x-1 gap-y-2 h-full justify-between">
+                           <div class="flex items-center w-1/5">
                                <img src="pdf-image.png" alt="Image of Pdf" class="w-20 h-20">
                            </div>
-                          <div class="flex flex-col justify-center items-center w-3/5">
-                            <div class="flex flex-col items-center justify-between gap-2 h-full">
-                                <p class="text-lg font-medium">The History of AI</p>
-                                <p class="text-xs text-gray-500">23 Aug 2025 - (2 MB)</p>
+                          <div class="flex flex-col justify-center items-center w-4/5">
+                            <div class="flex flex-col items-start justify-between gap-2 h-full w-full">
+                                <div>
+                                    <p class="text-lg font-medium">{{  file.name  }}</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <p class="text-xs text-gray-500">{{ file.pages  }} Pages</p>
+                                    <p class="text-xs text-gray-500">{{ file.created_at  }} - ({{  file.size }})</p>
+                                </div>
+                                <Badge v-if="file.status === 'processing'" variant="outline" class="bg-yellow-500 mt-2"><Loader2 class="w-10 h-10 animate-spin"></Loader2>Processing</Badge>
+                                <Badge v-else-if="file.status === 'active'" variant="outline" class="bg-green-500 mt-2">Completed</Badge>
+                                <Badge v-else-if="file.status === 'failed'" variant="outline" class="bg-red-500 mt-2">Failed</Badge>
                             </div>
                           </div>
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button class="w-full cursor-pointer">
+                        <Button class="w-full cursor-pointer" disabled>
+                            <BotMessageSquare class="mr-2 h-4 w-4" /> Chat AI Assistant
+                        </Button>
+                    </CardFooter>
+                </Card>
+                <!-- <Card class="flex flex-col justify-between">
+                    <CardContent class="h-full">
+                       <div class="flex gap-x-1 gap-y-2 h-full justify-between">
+                           <div class="flex items-center w-1/5">
+                               <img src="pdf-image.png" alt="Image of Pdf" class="w-20 h-20">
+                           </div>
+                          <div class="flex flex-col justify-center items-center w-4/5">
+                            <div class="flex flex-col items-start justify-between gap-2 h-full w-full">
+                                <div>
+                                    <p class="text-lg font-medium">The History of AI</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <p class="text-xs text-gray-500">224 Pages</p>
+                                    <p class="text-xs text-gray-500">23 Aug 2025 - (2 MB)</p>
+                                </div>
+                                <Badge variant="outline" class="bg-yellow-500 mt-2"><Loader2 class="w-10 h-10 animate-spin"></Loader2>Processing</Badge>
+                            </div>
+                          </div>
+                        </div>
+                    </CardContent>
+                    <CardFooter>
+                        <Button class="w-full cursor-pointer" disabled>
                             <BotMessageSquare class="mr-2 h-4 w-4" /> Chat AI Assistant
                         </Button>
                     </CardFooter>
                 </Card>
 
-                <Card>
-                    <CardContent>
+                <Card class="flex flex-col justify-between">
+                    <CardContent class="h-full">
                        <div class="flex gap-y-2 gap-x-1">
-                           <div class="flex items-center w-1/3">
-                               <img src="pdf-image.png" alt="Image of Pdf" class="w-20 h-20">
-                           </div>
-                          <div class="flex flex-col justify-center items-center w-3/5">
-                            <div class="flex flex-col items-center justify-between gap-2 h-full">
-                                <p class="font-medium">Foundational Level of Twister Malicious</p>
-                                <p class="text-xs text-gray-500">23 Aug 2025 - (2 MB)</p>
+                            <div class="flex items-center w-1/5">
+                                <img src="pdf-image.png" alt="Image of Pdf" class="w-20 h-20">
                             </div>
-                          </div>
+                            <div class="flex flex-col justify-center items-center w-4/5">
+                                <div class="flex flex-col items-start justify-between gap-2 h-full w-full">
+                                    <div>
+                                        <p class="font-medium">Foundational Level of Twister Malicious</p>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <p class="text-xs text-gray-500">224 Pages</p>
+                                        <p class="text-xs text-gray-500">23 Aug 2025 - (2 MB)</p>
+                                    </div>
+                                    <Badge variant="outline" class="bg-green-500 mt-2">Completed</Badge>
+                                </div>
+                            </div>
                         </div>
                     </CardContent>
                     <CardFooter>
@@ -192,7 +243,7 @@ const handleError = (page: any) => {
                             <BotMessageSquare class="mr-2 h-4 w-4" /> Chat AI Assistant
                         </Button>
                     </CardFooter>
-                </Card>
+                </Card> -->
             </div>
         </div>
     </AppLayout>
