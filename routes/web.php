@@ -1,9 +1,10 @@
 <?php
 
+use Inertia\Inertia;
 use App\Jobs\ProcessDocumentJob;
 use App\Jobs\ProcessUserQueryJob;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+use App\Http\Controllers\FileController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -14,17 +15,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
-    Route::get('files', function () {
-        return Inertia::render('File');
-    })->name('file');
+    // Route::get('files', function () {
+    //     return Inertia::render('File');
+    // })->name('file');
 
     Route::get('files/show', function () {
         return Inertia::render('Show');
     })->name('show');
 
-    Route::get('files/chat', function () {
-        return Inertia::render('Chat');
-    })->name('chat');
+    // Route::get('files/chat', function () {
+    //     return Inertia::render('Chat');
+    // })->name('chat');
+
+    Route::resource('files', FileController::class);
 
 });
 

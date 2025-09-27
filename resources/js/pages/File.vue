@@ -18,12 +18,14 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard,file } from '@/routes';
+import { dashboard } from '@/routes';
+import { index, store } from '@/actions/App/Http/Controllers/FileController';
 import { type BreadcrumbItem } from '@/types';
 import { BotMessageSquare, File } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
-import { Head } from '@inertiajs/vue3';
-
+import { Form, Head } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { toast } from 'vue-sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -32,10 +34,42 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Files',
-        href: file().url,
+        href: index.url(),
     },
 ];
 
+const file = ref<File | null>(null);
+const filename = ref<string | null>(null);
+
+const handleFileChange = (event: Event) => {
+    const inputFile = (event.target as HTMLInputElement).files?.[0];
+    if (inputFile) {
+        file.value = inputFile || null;
+    }
+    filename.value = inputFile?.name || null;
+};
+
+const handleSuccess = (page: any) => {
+    if(page?.props?.flash?.message) {
+        toast.success("Success",  {
+            description: page?.props?.flash?.message,
+        });
+
+        filename.value = null;
+        file.value = null;
+    }
+};
+
+const handleError = (page: any) => {
+    if(page?.message) {
+        toast.error("Error", {
+            description: page?.message,
+        });
+
+        filename.value = null;
+        file.value = null;
+    } 
+};
 </script>
 
 
@@ -47,57 +81,73 @@ const breadcrumbs: BreadcrumbItem[] = [
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
             <Drawer>
-                <DrawerTrigger as-child>
-                    <div class="flex justify-end">
+                <div class="flex justify-end">
+                    <DrawerTrigger as-child class="border">
                         <Button class="cursor-pointer">Upload File</Button>
-                    </div>
-                </DrawerTrigger>
+                    </DrawerTrigger>
+                </div>
                 <DrawerContent>
                     <div class="mx-auto w-full max-w-sm">
-                        <DrawerHeader>
-                            <DrawerTitle>Upload PDF File</DrawerTitle>
-                            <DrawerDescription>Select a PDF file to upload for AI analysis</DrawerDescription>
-                        </DrawerHeader>
-                        <div class="p-4 pb-0">
-                            <div class="flex items-center justify-center space-x-2">
-                                <div class="grid w-full max-w-sm items-center gap-1.5">
-                                    <label
-                                        for="file-upload"
-                                        class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition"
-                                    >
-                                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <svg
-                                            class="w-10 h-10 mb-3 text-gray-400"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg"
+                        <Form 
+                            :action="store.url()"
+                            method="post"
+                            disableWhileProcessing
+                            @success="handleSuccess"
+                            @error="handleError"
+                            resetOnSuccess
+                            #default="{
+                                processing,
+                                errors,
+                                reset
+                            }"
+                        >
+                            <DrawerHeader>
+                                <DrawerTitle>Upload PDF File</DrawerTitle>
+                                <DrawerDescription>Select a PDF file to upload for AI analysis</DrawerDescription>
+                            </DrawerHeader>
+                            <div class="p-4 pb-0">
+                                <div class="flex items-center justify-center space-x-2">
+                                    <div class="grid w-full max-w-sm items-center gap-1.5">
+                                        <label
+                                            for="file-upload"
+                                            class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition"
                                         >
-                                            <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                                            ></path>
-                                        </svg>
-                                        <p class="mb-2 text-sm text-gray-500">
-                                            <span class="font-semibold">Click to upload</span> or drag and drop
-                                        </p>
-                                        <p class="text-xs text-gray-400">PDF up to 10MB</p>
-                                        </div>
-                                        <input id="pdf" type="file" class="hidden" />
-                                    </label>
+                                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <svg
+                                                class="w-10 h-10 mb-3 text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                                ></path>
+                                            </svg>
+                                            <p class="mb-2 text-sm text-gray-500">
+                                                <span class="font-semibold">Click to upload</span>
+                                            </p>
+                                            <p class="text-xs text-gray-400">PDF up to 10MB</p>
+                                            </div>
+                                            <input id="file-upload" name="file" type="file" class="hidden" accept="application/pdf" @change="handleFileChange" />
+                                        </label>
+                                        <p class="italic text-gray-300 text-sm">{{ filename  }}</p>
+                                        <p class="italic text-red-500 text-sm">{{ errors.file }}</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <DrawerFooter>
-                            <Button>Submit</Button>
-                            <DrawerClose>
-                            <Button variant="outline">
-                                Cancel
-                            </Button>
-                            </DrawerClose>
-                        </DrawerFooter>
+                            <DrawerFooter>
+                                <Button type="submit" :disabled="processing" class="cursor-pointer">Submit</Button>
+                                <DrawerClose>
+                                <Button type="button" variant="outline" class="cursor-pointer">
+                                    Cancel
+                                </Button>
+                                </DrawerClose>
+                            </DrawerFooter>
+                        </Form>
                     </div>
                 </DrawerContent>       
             </Drawer>

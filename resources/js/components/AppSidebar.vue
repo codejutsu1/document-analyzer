@@ -11,7 +11,8 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, file } from '@/routes';
+import { dashboard } from '@/routes';
+import FileController from '@/actions/App/Http/Controllers/FileController';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, FolderOpen } from 'lucide-vue-next';
@@ -25,7 +26,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Files',
-        href: file(),
+        href:  FileController.index.url(),
         icon: FolderOpen,
     },
 ];
