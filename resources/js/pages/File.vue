@@ -19,13 +19,13 @@ import {
 } from "@/components/ui/drawer";
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Badge } from '@/components/ui/badge';
-import { Loader2 } from 'lucide-vue-next';
+import { Loader2, Eye } from 'lucide-vue-next';
 import { dashboard } from '@/routes';
-import { index, store } from '@/actions/App/Http/Controllers/FileController';
+import { index, store, show } from '@/actions/App/Http/Controllers/FileController';
 import { type BreadcrumbItem } from '@/types';
 import { BotMessageSquare, File } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
@@ -185,7 +185,12 @@ const handleError = (page: any) => {
                           </div>
                         </div>
                     </CardContent>
-                    <CardFooter>
+                    <CardFooter class="grid grid-cols-2 gap-2">
+                        <Link :href="show.url(file.uuid)" class="w-full cursor-pointer">
+                            <Button class="w-full cursor-pointer">
+                                <Eye class="mr-2 h-4 w-4" /> See Details
+                            </Button>
+                        </Link>
                         <Button class="w-full cursor-pointer" disabled>
                             <BotMessageSquare class="mr-2 h-4 w-4" /> Chat AI Assistant
                         </Button>

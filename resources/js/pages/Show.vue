@@ -2,10 +2,6 @@
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import { 
     Stepper, 
@@ -17,12 +13,19 @@ import {
 } from "@/components/ui/stepper";
 import { Badge } from '@/components/ui/badge'
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard, show } from '@/routes';
+import { dashboard } from '@/routes';
+import { index, show } from '@/actions/App/Http/Controllers/FileController';
 import { type BreadcrumbItem } from '@/types';
 import { Check, Circle, Dot } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Head } from '@inertiajs/vue3';
 import { Loader2 } from "lucide-vue-next";
+
+const props = defineProps<{
+    file: any;
+}>();
+
+console.log(props.file);
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -32,11 +35,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Files',
-        href: show().url,
+        href: index().url,
     },
     {
-        title: 'History of AI',
-        href: show().url,
+        title: props?.file?.data?.name,
+        href: index().url,
     },
 ];
 
@@ -82,34 +85,34 @@ const steps = [
                             <div class="flex flex-col gap-2 space-y-1 text-sm">
                                 <div class="flex items-start">
                                     <span class="text-gray-400 text-sm w-1/5">Name: </span>
-                                    <span class="font-medium w-4/5">The History of AI and the complexities to the society at large, a heresay study of the ancient world</span>
+                                    <span class="font-medium w-4/5">{{  file?.data?.name }}</span>
                                 </div>
                                 <div class="flex items-start">
                                     <span class="text-gray-400 text-sm w-1/5">Size: </span>
-                                    <span class="font-medium w-4/5">2 MB</span>
+                                    <span class="font-medium w-4/5">{{  file?.data?.size }}</span>
                                 </div>
                                 <div class="flex items-start">
                                     <span class="text-gray-400 text-sm w-1/5">Author: </span>
-                                    <span class="font-medium w-4/5">No Author in this PDF</span>
+                                    <span class="font-medium w-4/5">{{ file?.data?.author ?? "No Author in this PDF" }}</span>
                                 </div>
                                 <div class="flex items-start">
                                     <span class="text-gray-400 text-sm w-1/5">Pages: </span>
-                                    <span class="font-medium w-4/5">224</span>
+                                    <span class="font-medium w-4/5">{{ file?.data?.pages }}</span>
                                 </div>
                                 <div class="flex items-start">
                                     <span class="text-gray-400 text-sm w-1/5">Uploaded: </span>
-                                    <span class="font-medium w-4/5">23 Aug 2025</span>
+                                    <span class="font-medium w-4/5">{{ file?.data?.created_at }}</span>
                                 </div>
                                 <div class="flex items-start">
                                     <span class="text-gray-400 text-sm w-1/5">Type: </span>
-                                    <span class="font-medium w-4/5">PDF</span>
+                                    <span class="font-medium w-4/5">{{ file?.data?.type }}</span>
                                 </div>
                                 <div class="flex items-start">
                                     <span class="text-gray-400 text-sm w-1/5">Status: </span>
                                     <div class="flex items-center">
-                                        <!-- <span class="font-medium w-4/5"><Badge variant="outline" class="bg-green-500">Completed</Badge></span>
-                                        <span class="font-medium w-4/5"><Badge variant="outline" class="bg-red-500">Failed</Badge></span> -->
-                                        <span class="font-medium w-4/5"><Badge variant="outline" class="bg-yellow-500"><Loader2 class="w-10 h-10 animate-spin"></Loader2>Processing</Badge></span>
+                                        <span v-if="file?.data?.status === 'active'" class="font-medium w-4/5"><Badge variant="outline" class="bg-green-500">Completed</Badge></span>
+                                        <span v-if="file?.data?.status === 'failed'" class="font-medium w-4/5"><Badge variant="outline" class="bg-red-500">Failed</Badge></span>
+                                        <span v-if="file?.data?.status === 'processing'" class="font-medium w-4/5"><Badge variant="outline" class="bg-yellow-500"><Loader2 class="w-10 h-10 animate-spin"></Loader2>Processing</Badge></span>
                                     </div>
                                 </div>
                             </div>

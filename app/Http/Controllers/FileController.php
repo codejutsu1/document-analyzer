@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\File\FileIndexResource;
 use App\Models\File;
 use App\Models\User;
 use Inertia\Inertia;
@@ -11,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
+use App\Http\Resources\File\FileShowResource;
+use App\Http\Resources\File\FileIndexResource;
 
 class FileController extends Controller
 {
@@ -80,9 +81,11 @@ class FileController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(File $file)
     {
-        //
+        return Inertia::render('Show', [
+            'file' => fn () => new FileShowResource($file),
+        ]);
     }
 
     /**

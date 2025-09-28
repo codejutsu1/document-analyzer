@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge'
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard,file, show } from '@/routes';
+import { dashboard, show } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Check, Circle, Dot } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
@@ -33,7 +33,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Files',
-        href: file().url,
+        href: show().url,
     },
     {
         title: 'History of AI',

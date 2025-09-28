@@ -22,6 +22,11 @@ class File extends Model
         'type',
     ];
 
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
     protected function casts(): array
     {
         return [

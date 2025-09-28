@@ -5,7 +5,7 @@ namespace App\Http\Resources\File;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class FileIndexResource extends JsonResource
+class FileShowResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,14 +14,16 @@ class FileIndexResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [  
+        return [
             'id' => $this->id,
             'uuid' => $this->uuid,
-            'name' => $this->name ?? "Processing",
-            'size' => ceil($this->size) . " MB",
-            'pages' => $this->pages ?? "Processing",
+            'name' => $this->name,
+            'size' => $this->size,
+            'author' => $this->author,
+            'pages' => $this->pages,
             'status' => $this->status,
             'created_at' => $this->created_at->format('d M, Y'),
+            'type' => strtoUpper($this->type->value),
         ];
     }
 }
