@@ -6,6 +6,11 @@ import type { DefineComponent } from 'vue';
 import { createApp, h, Fragment } from 'vue';
 import { initializeTheme } from './composables/useAppearance';
 import { Toaster } from '@/components/ui/sonner';
+import { configureEcho } from '@laravel/echo-vue';
+
+configureEcho({
+    broadcaster: 'reverb',
+});
 import 'vue-sonner/style.css'; 
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';

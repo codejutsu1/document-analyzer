@@ -14,7 +14,7 @@ class LlmManager extends Manager
         return config('app.services.llm.driver', 'gemini');
     }
 
-    public function createChatgptDriver(): InteractWithLlm
+    public function createOpenAIDriver(): InteractWithLlm
     {
         return new OpenAIDriver;
     }
