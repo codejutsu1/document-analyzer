@@ -1,8 +1,10 @@
 <?php
 
+use App\Models\File;
 use Inertia\Inertia;
 use App\Jobs\ProcessDocumentJob;
 use App\Jobs\ProcessUserQueryJob;
+use App\Events\FilesStatusUpdated;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FileController;
 
@@ -33,7 +35,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('pdf', function () {
     // ProcessDocumentJob::dispatch('bill');
-    ProcessUserQueryJob::dispatch('Is Benefit of kind part of pdf?');
+    // ProcessUserQueryJob::dispatch('Is Benefit of kind part of pdf?');
+
+    // FilesStatusUpdated::dispatch(File::find(1));
+    event(new FilesStatusUpdated(File::find(3)));
 
     dd('live');
 });

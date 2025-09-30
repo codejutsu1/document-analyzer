@@ -3,6 +3,8 @@
 namespace App\Jobs;
 
 use App\Models\File;
+use App\Events\FilesStatusUpdated;
+use App\Enums\FileStatus;
 use Smalot\PdfParser\Parser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Queue\Queueable;
@@ -42,6 +44,10 @@ class ProcessFileJob implements ShouldQueue
             'name' => $title,
             'author' => $author,
             'pages' => $pagesCount,
+            'status' => FileStatus::ACTIVE,
         ]);
+
+        // Dispatch the FilesStatusUpdated event
+        event(new FilesStatusUpdated($this->file));
     }
 }

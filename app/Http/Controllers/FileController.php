@@ -6,6 +6,7 @@ use App\Models\File;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Jobs\ProcessFileJob;
+use App\Enums\FileStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -64,6 +65,7 @@ class FileController extends Controller
                $fileModel = $user->files()->create([
                 'path' => $file->store('files', 'public'),
                 'size' => round(($file->getSize() / 1024) / 1024, 2),
+                'status' => FileStatus::PROCESSING,
                ]);
 
 

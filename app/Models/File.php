@@ -20,6 +20,10 @@ class File extends Model
         'author',
         'pages',
         'type',
+        'status',
+        'chunking_status',
+        'embedding_status',
+        'storage_status',
     ];
 
     public function getRouteKeyName(): string

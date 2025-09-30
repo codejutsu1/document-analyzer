@@ -7,6 +7,7 @@ import { createApp, h, Fragment } from 'vue';
 import { initializeTheme } from './composables/useAppearance';
 import { Toaster } from '@/components/ui/sonner';
 import { configureEcho } from '@laravel/echo-vue';
+import './echo';
 
 configureEcho({
     broadcaster: 'reverb',

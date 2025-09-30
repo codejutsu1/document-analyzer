@@ -20,12 +20,14 @@ import { Check, Circle, Dot } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Head } from '@inertiajs/vue3';
 import { Loader2 } from "lucide-vue-next";
+import { onMounted } from 'vue';
+import { useEcho } from '@laravel/echo-vue';
+import Echo from 'laravel-echo';
 
 const props = defineProps<{
     file: any;
 }>();
 
-console.log(props.file);
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -64,6 +66,24 @@ const steps = [
         "The generated embeddings are stored in a vector database, where they are indexed for efficient similarity search. This allows fast and accurate retrieval of relevant text chunks based on semantic queries, powering downstream applications like question answering or content search",
   },
 ]
+
+onMounted(() => {
+    // useEcho(
+    //     `file-status.${props?.file?.data?.id}`,
+    //     "FilesStatusUpdated",
+    //     (e: any) => {
+    //         console.log("hello there.");
+    //         console.log(e.file.status);
+    //     },
+    // );
+
+    window.Echo.private(`file-status.${props.file.data.id}`)
+        .listen('FilesStatusUpdated', (e) => {
+            console.log(e.file.chunking_status);
+            console.log(e.file.embedding_status);
+            console.log(e.file.storage_status);
+        });
+});
 </script>
 
 
