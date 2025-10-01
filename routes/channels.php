@@ -19,3 +19,9 @@ Broadcast::channel('file-status.{id}', function ($user, $id) {
 
     return $fileExists;
 });
+
+Broadcast::channel('user-files.{userId}', function ($user, $userId) {
+    Log::info('user-files.' . $userId);
+
+    return (int) $user->id === (int) $userId;
+});

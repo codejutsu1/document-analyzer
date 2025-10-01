@@ -26,8 +26,11 @@ import { type BreadcrumbItem } from '@/types';
 import { BotMessageSquare, File } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Form, Head, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import { usePage } from '@inertiajs/vue3';
+
+const page = usePage();
 
 defineProps<{
     files: { data: any[] };
@@ -81,6 +84,23 @@ const handleError = (page: any) => {
         file.value = null;
     } 
 };
+
+
+onMounted(() => {
+    const userId = page?.props?.auth?.user?.id;
+
+    // window.Echo.private(`user-files.${userId}`) 
+    //     .listen('FileDetailsUpdated', (e) => {
+    //         console.log(e.file);
+    //         console.log("working");
+    //     });
+});
+
+
+// onUnmounted(() => {
+//     const userId = page?.props?.auth?.user?.id;
+//     window.Echo.leave(`private-user-files.${userId}`);
+// });
 </script>
 
 
@@ -196,6 +216,7 @@ const handleError = (page: any) => {
                         </Button>
                     </CardFooter>
                 </Card>
+                
                 <!-- <Card class="flex flex-col justify-between">
                     <CardContent class="h-full">
                        <div class="flex gap-x-1 gap-y-2 h-full justify-between">

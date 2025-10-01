@@ -7,6 +7,7 @@ use App\Jobs\ProcessDocumentJob;
 use App\Jobs\ProcessUserQueryJob;
 use App\Events\FilesStatusUpdated;
 use Illuminate\Support\Facades\Route;
+use App\Events\FileDetailsUpdated;
 use App\Http\Controllers\FileController;
 
 Route::get('/', function () {
@@ -26,9 +27,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Show');
     })->name('show');
 
-    // Route::get('files/chat', function () {
-    //     return Inertia::render('Chat');
-    // })->name('chat');
+    Route::get('files/chat', function () {
+        return Inertia::render('Chat');
+    })->name('chat');
 
     Route::resource('files', FileController::class);
 
@@ -47,9 +48,11 @@ Route::get('pdf', function () {
     // $file->embedding_status = FileStatus::COMPLETED;
     // $file->storage_status = FileStatus::ACTIVE;   
 
-    $file->storage_status = FileStatus::COMPLETED;
-    $file->save();
-    event(new FilesStatusUpdated(File::find(1)));
+    // $file->storage_status = FileStatus::COMPLETED;
+    // $file->save();
+    // event(new FilesStatusUpdated(File::find(1)));
+
+    event(new FileDetailsUpdated(File::find(1)));
 
     dd('live');
 });

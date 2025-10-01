@@ -3,14 +3,15 @@
 namespace App\Jobs;
 
 use App\Models\File;
-use App\Events\FilesStatusUpdated;
 use App\Enums\FileStatus;
 use Smalot\PdfParser\Parser;
+use App\Events\FilesStatusUpdated;
+use App\Events\FileDetailsUpdated;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class ProcessFileJob implements ShouldQueue
+class ProcessFileJob
 {
     use Queueable;
 
@@ -47,6 +48,7 @@ class ProcessFileJob implements ShouldQueue
             'status' => FileStatus::PROCESSING,
         ]);
 
+        // event(new FileDetailsUpdated($this->file));
         ProcessDocumentJob::dispatch($this->file);
     }
 }
