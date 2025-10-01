@@ -3,12 +3,15 @@
 namespace App\Jobs;
 
 use App\Facades\Llm;
-use App\Facades\VectorDatabase;
-use App\Services\VectorDatabase\Data\QdrantUpsertPayload;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Log;
+use App\Models\File;
+use App\Enums\FileStatus;
 use Illuminate\Support\Str;
+use App\Facades\VectorDatabase;
+use App\Events\FilesStatusUpdated;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Services\VectorDatabase\Data\QdrantUpsertPayload;
 
 class ProcessChunkJob implements ShouldQueue
 {
@@ -19,7 +22,7 @@ class ProcessChunkJob implements ShouldQueue
      */
     public function __construct(
         protected array $chunk,
-        protected string $filename
+        protected File $file
     ) {}
 
     /**
@@ -30,6 +33,12 @@ class ProcessChunkJob implements ShouldQueue
         try {
             $embedding = Llm::embed($this->chunk['text']);
 
+            $this->file->embedding_status = FileStatus::COMPLETED;
+            $this->file->storage_status = FileStatus::ACTIVE;
+            $this->file->save();
+
+            event(new FilesStatusUpdated($this->file));
+
             $uuid = Str::uuid();
 
             $payload = QdrantUpsertPayload::from([
@@ -37,7 +46,7 @@ class ProcessChunkJob implements ShouldQueue
                 'id' => $uuid,
                 'vector' => $embedding,
                 'payload' => [
-                    'doc_id' => $this->filename,
+                    'doc_id' => $this->file->path,
                     'page' => $this->chunk['page'] ?? null,
                     'chunk_index' => $this->chunk['chunk_index'],
                     'text' => $this->chunk['text'],
@@ -53,6 +62,11 @@ class ProcessChunkJob implements ShouldQueue
             Log::info('Chunk '.$this->chunk['chunk_index'].' stored in vector database');
 
             Log::info('Chunk '.$this->chunk['chunk_index'].' processed successfully');
+
+            $this->file->storage_status = FileStatus::COMPLETED;
+            $this->file->save();
+
+            event(new FilesStatusUpdated($this->file)); 
 
             // '595c678e-b6b3-4dac-8a51-b316cf03a50a';
         } catch (\Throwable $e) {

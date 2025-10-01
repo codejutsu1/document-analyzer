@@ -28,7 +28,7 @@ class PdfService
                     ? $filename
                     : $filename.'.pdf';
 
-        return Storage::disk('public')->path('pdfs/'.$pdf);
+        return Storage::disk('public')->path($pdf);
     }
 
     public function getPdfText(string $filename): string

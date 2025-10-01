@@ -2,6 +2,7 @@
 
 use App\Models\File;
 use Inertia\Inertia;
+use App\Enums\FileStatus;
 use App\Jobs\ProcessDocumentJob;
 use App\Jobs\ProcessUserQueryJob;
 use App\Events\FilesStatusUpdated;
@@ -38,7 +39,17 @@ Route::get('pdf', function () {
     // ProcessUserQueryJob::dispatch('Is Benefit of kind part of pdf?');
 
     // FilesStatusUpdated::dispatch(File::find(1));
-    event(new FilesStatusUpdated(File::find(3)));
+    $file = File::find(1);
+
+    // $file->chunking_status = FileStatus::COMPLETED;
+    // $file->embedding_status = FileStatus::ACTIVE;
+
+    // $file->embedding_status = FileStatus::COMPLETED;
+    // $file->storage_status = FileStatus::ACTIVE;   
+
+    $file->storage_status = FileStatus::COMPLETED;
+    $file->save();
+    event(new FilesStatusUpdated(File::find(1)));
 
     dd('live');
 });

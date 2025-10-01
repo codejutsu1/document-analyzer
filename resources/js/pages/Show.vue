@@ -16,18 +16,20 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { index, show } from '@/actions/App/Http/Controllers/FileController';
 import { type BreadcrumbItem } from '@/types';
-import { Check, Circle, Dot } from 'lucide-vue-next';
+import { Check, Circle, Dot, Loader2 } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Head } from '@inertiajs/vue3';
-import { Loader2 } from "lucide-vue-next";
-import { onMounted } from 'vue';
-import { useEcho } from '@laravel/echo-vue';
-import Echo from 'laravel-echo';
+import { onMounted, ref } from 'vue';
 
 const props = defineProps<{
     file: any;
 }>();
 
+const chunkingStatus = ref(props.file.data.chunking_status);
+const embeddingStatus = ref(props.file.data.embedding_status);
+const storageStatus = ref(props.file.data.storage_status);
+
+const progressPercentage = ref(0);
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -45,45 +47,67 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+onMounted(() => {
+    window.Echo.private(`file-status.${props.file.data.id}`)
+        .listen('FilesStatusUpdated', (e) => {
+            console.log("working");
+            console.log("Chunking Status: ", e.file.chunking_status);
+            console.log("Embedding Status: ", e.file.embedding_status);
+            console.log("Storage Status: ", e.file.storage_status);
+
+            chunkingStatus.value = e.file.chunking_status;
+            embeddingStatus.value = e.file.embedding_status;
+            storageStatus.value = e.file.storage_status;
+
+            if(e.file.chunking_status === 'completed') {
+                progressPercentage.value = 33;
+            }
+
+            if(e.file.chunking_status === 'completed' && e.file.embedding_status === 'completed') {
+                progressPercentage.value = 66;
+            }
+            if(e.file.chunking_status === 'completed' && e.file.embedding_status === 'completed' && e.file.storage_status === 'completed') {
+                progressPercentage.value = 100;
+            }
+        });
+});
+
+    if(chunkingStatus.value === 'completed') {
+        progressPercentage.value = 33;
+    }
+
+    if(chunkingStatus.value === 'completed' && embeddingStatus.value === 'completed') {
+        progressPercentage.value = 66;
+    }
+    if(chunkingStatus.value === 'completed' && embeddingStatus.value === 'completed' && storageStatus.value === 'completed') {
+        progressPercentage.value = 100;
+    }
+
 
 
 const steps = [
   {
     step: 1,
-    title: "Text Extracting & Chunking",
+    title: "Chunking",
     description:
-        "The raw text is extracted from the PDF and divided into smaller, manageable chunks. Chunking ensures that each piece of text is within token limits for processing, while still preserving enough context for meaningful understanding.",
-  },
+        "Splitting file into chunks",
+    status: chunkingStatus,
+    },
   {
     step: 2,
-    title: "Generating Embeddings",
-    description: "Each text chunk is sent to an AI embedding model, which transforms the text into high-dimensional vector representations. These embeddings capture the semantic meaning of the text so that similar chunks can be compared and retrieved effectively.",
-  },
+    title: "Embeddings",
+    description: "Generating embeddings",
+    status: embeddingStatus,
+    },
   {
     step: 3,
-    title: "Storing Embeddings",
+    title: "Storage",
     description:
-        "The generated embeddings are stored in a vector database, where they are indexed for efficient similarity search. This allows fast and accurate retrieval of relevant text chunks based on semantic queries, powering downstream applications like question answering or content search",
+        "Saving embeddings to vector storage",
+    status: storageStatus,
   },
 ]
 
-onMounted(() => {
-    // useEcho(
-    //     `file-status.${props?.file?.data?.id}`,
-    //     "FilesStatusUpdated",
-    //     (e: any) => {
-    //         console.log("hello there.");
-    //         console.log(e.file.status);
-    //     },
-    // );
-
-    window.Echo.private(`file-status.${props.file.data.id}`)
-        .listen('FilesStatusUpdated', (e) => {
-            console.log(e.file.chunking_status);
-            console.log(e.file.embedding_status);
-            console.log(e.file.storage_status);
-        });
-});
 </script>
 
 
@@ -141,13 +165,13 @@ onMounted(() => {
                     </CardContent>
                 </Card>
                 <div>
-                    <Stepper orientation="vertical" class="mx-auto flex w-full max-w-md flex-col justify-start gap-10">
+                    <!-- <Stepper orientation="vertical" class="mx-auto flex w-full max-w-md flex-col justify-start gap-10">
                         <StepperItem
-                        v-for="step in steps"
-                        :key="step.step"
-                        v-slot="{ state }"
-                        class="relative flex w-full items-start gap-6"
-                        :step="step.step"
+                            v-for="step in steps"
+                            :key="step.step"
+                            v-slot="{ state }"
+                            class="relative flex w-full items-start gap-6"
+                            :step="step.step"
                         >
                         <StepperSeparator
                             v-if="step.step !== steps[steps.length - 1].step"
@@ -156,14 +180,14 @@ onMounted(() => {
 
                         <StepperTrigger as-child>
                             <Button
-                            :variant="state === 'completed' || state === 'active' ? 'default' : 'outline'"
-                            size="icon"
-                            class="z-10 rounded-full shrink-0"
-                            :class="[state === 'active' && 'ring-2 ring-ring ring-offset-2 ring-offset-background']"
+                                :variant="step.status.value === 'completed' || step.status.value === 'active' ? 'default' : 'outline'"
+                                size="icon"
+                                class="z-10 rounded-full shrink-0 pointer-events-none"
+                                :class="[step.status.value === 'pending' && 'ring-2 ring-ring ring-offset-2 ring-offset-background']"
                             >
-                            <Check v-if="state === 'completed'" class="size-5" />
-                            <Circle v-if="state === 'active'" />
-                            <Dot v-if="state === 'inactive'" />
+                                <Check v-if="step.status.value === 'completed'" class="size-5" />
+                                <Circle v-if="step.status.value === 'active'" />
+                                <Dot v-if="step.status.value === 'failed'" />
                             </Button>
                         </StepperTrigger>
 
@@ -182,7 +206,47 @@ onMounted(() => {
                             </StepperDescription>
                         </div>
                         </StepperItem>
-                    </Stepper>
+                    </Stepper> -->
+
+                    <div class="max-w-3xl mx-auto p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                            <h3 class="text-lg font-semibold">Processing status</h3>
+                            <p class="text-sm text-gray-500">Background pipeline progress and logs</p>
+                            </div>
+                        </div>
+
+                        <!-- Progress bar -->
+                        <div class="relative h-3 rounded-full bg-gray-200 overflow-hidden mb-6">
+                            <!-- filled portion -->
+                            <div class="absolute left-0 top-0 h-full bg-blue-500 rounded-full transition-all duration-500 ease-out" :style="{ width: progressPercentage + '%' }"></div>
+                        </div>
+
+
+                        <!-- Details / timeline -->
+                        <div class="space-y-3 shadow-sm divide-y">
+                            <Card v-for="step in steps" :key="step.step">
+                                <CardContent>
+                                    <div class="flex gap-4 items-start">
+                                        <div v-if="step.status.value === 'completed'" class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-medium">✓</div>
+                                        <div v-if="step.status.value === 'active'" class="w-8 h-8 rounded-full border-2 border-blue-600 bg-white text-blue-600 flex items-center justify-center text-sm font-medium animate-pulse">●</div>
+                                        <div v-if="step.status.value === 'pending'" class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-sm font-medium">{{ step.step }}</div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between">
+                                            <div>
+                                                <div 
+                                                    class="text-sm font-semibold"
+                                                    :class="step.status.value === 'completed' ? 'text-green-600' : (step.status.value === 'active' ? 'text-blue-600 animate-pulse' : 'text-gray-600')"
+                                                >{{ step.title }}</div>
+                                                <div class="text-xs text-gray-500">{{ step.description }}</div>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

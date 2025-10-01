@@ -44,10 +44,9 @@ class ProcessFileJob implements ShouldQueue
             'name' => $title,
             'author' => $author,
             'pages' => $pagesCount,
-            'status' => FileStatus::ACTIVE,
+            'status' => FileStatus::PROCESSING,
         ]);
 
-        // Dispatch the FilesStatusUpdated event
-        event(new FilesStatusUpdated($this->file));
+        ProcessDocumentJob::dispatch($this->file);
     }
 }

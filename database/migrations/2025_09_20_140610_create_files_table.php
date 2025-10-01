@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('type')->default(FileType::PDF);
             $table->string('status')->default(FileStatus::PROCESSING);
 
-            $table->string('chunking_status')->default(FileStatus::PENDING);
+            $table->string('chunking_status')->default(FileStatus::ACTIVE);
             $table->string('embedding_status')->default(FileStatus::PENDING);
             $table->string('storage_status')->default(FileStatus::PENDING);
 
