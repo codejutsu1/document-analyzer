@@ -19,6 +19,9 @@ return new class extends Migration
 
             $table->foreignIdFor(Conversation::class);
             $table->foreignIdFor(User::class);
+
+            $table->string('participant');
+            
             $table->text('message');
 
             $table->timestamps();
