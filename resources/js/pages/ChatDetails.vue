@@ -75,12 +75,12 @@ onMounted(() => {
         <div
             class="flex h-full border flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
-           <div class="flex gap-4 h-[500px]">
-                <div class="w-[70%]  h-[90%]">
+           <div class="flex gap-4 h-full">
+                <div class="w-[70%] h-full">
                     <div class="h-full">
                         <div class="relative h-full flex flex-col items-center justify-between">
-                            <ScrollArea class="w-full rounded-md h-[100%] border p-2">
-                                <div class="flex flex-col space-y-2 border-4">
+                            <ScrollArea class="w-full rounded-md h-[400px] p-2 mb-2">
+                                <div class="space-y-2">
                                     <div v-for="message in messages.data" :key="message.id" class="flex" :class="message.participant === 'user' ? 'justify-end' : 'justify-start'">
                                         <div class="text-white rounded-4xl p-4  max-w-[70%]" :class="message.participant === 'user' ? 'bg-zinc-800' : 'bg-gray-900'">
                                             <p>
@@ -97,7 +97,7 @@ onMounted(() => {
                                 @success="handleSuccess"
                                 @error="handleError"
                                 resetOnSuccess
-                                class="absolute bottom-0 w-full px-1"
+                                class="w-full px-1"
                                 #default="{
                                     processing,
                                     errors,
@@ -135,7 +135,7 @@ onMounted(() => {
                         </div>
                     </div>
                 </div>
-                <div class="w-1/3 h-[90%] border rounded-lg py-4 px-2">
+                <div class="w-1/3 h-full border rounded-lg py-4 px-2">
                     <h1 class="text-lg font-bold text-center">Chat History</h1>
                     <ScrollArea class="h-[90%] w-full rounded-md">
                         <div class="mt-2 space-y-2">
