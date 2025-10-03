@@ -17,7 +17,17 @@ class ConversationResource extends JsonResource
         return [
             'id' => $this->id,
             'uuid' => $this->uuid,
+            'message' => $this->getMessages($this->messages->first()->message),
             'created_at' => $this->created_at->format('d M, Y'),
         ];
     }
+
+    protected function getMessages($text, $limit = 15): string
+    {
+        $words = explode(' ', $text);
+        $first = array_slice($words, 0, $limit);
+
+        return implode(' ', $first) . '...';
+    }
 }
+

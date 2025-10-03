@@ -11,8 +11,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge'
@@ -22,7 +20,7 @@ import { show } from '@/actions/App/Http/Controllers/FileController';
 import { type BreadcrumbItem } from '@/types';
 import { Check, Circle, Dot } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
-import { Head, Form, usePage, router } from '@inertiajs/vue3';
+import { Head, Form, usePage, router, Link } from '@inertiajs/vue3';
 import { Ellipsis, Trash } from "lucide-vue-next";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import store from '@/actions/App/Http/Controllers/FileChatStoreController';
@@ -33,6 +31,7 @@ const page = usePage();
 
 const props = defineProps<{
     file: any;
+    conversations: any;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -135,100 +134,33 @@ const handleSuccess = () => {
                 <div class="w-1/3 h-[90%] border rounded-lg py-4 px-2">
                     <h1 class="text-lg font-bold text-center">Chat History</h1>
                     <ScrollArea class="h-[90%] w-full rounded-md">
-                        <div class="space-y-2 mt-2">
-                            <Card>
-                                <CardContent>
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <p class="text-sm font-medium">What is the capital of France?</p>
+                        <div class="mt-2 space-y-2">
+                            <Link
+                             v-for="conversation in conversations.data" :key="conversation.id"
+                             :href="chatDetails.url({ file: file.data.uuid, conversation: conversation.uuid })"
+                             class="block mt-3"
+                            >
+                                <Card>
+                                    <CardContent>
+                                        <div class="flex justify-between items-center">
+                                            <div>
+                                                <p class="text-sm font-medium">{{ conversation.message  }}</p>
+                                            </div>
+                                            <div>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger class="cursor-pointer"> <Ellipsis /></DropdownMenuTrigger>
+                                                    <DropdownMenuContent>
+                                                        <DropdownMenuItem class="cursor-pointer">
+                                                            <Trash class="text-red-500" />
+                                                            Delete Chat
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger class="cursor-pointer"> <Ellipsis /></DropdownMenuTrigger>
-                                                <DropdownMenuContent>
-                                                    <DropdownMenuItem class="cursor-pointer">
-                                                        <Trash class="text-red-500" />
-                                                        Delete Chat
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardContent>
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <p class="text-sm font-medium">Is the law the law?</p>
-                                        </div>
-                                        <div>
-                                            <Ellipsis />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardContent>
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <p class="text-sm font-medium">Hey, how are you doing?</p>
-                                        </div>
-                                        <div>
-                                            <Ellipsis />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardContent>
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <p class="text-sm font-medium">Hey, how are you doing?</p>
-                                        </div>
-                                        <div>
-                                            <Ellipsis />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardContent>
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <p class="text-sm font-medium">Hey, how are you doing?</p>
-                                        </div>
-                                        <div>
-                                            <Ellipsis />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardContent>
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <p class="text-sm font-medium">Hey, how are you doing?</p>
-                                        </div>
-                                        <div>
-                                            <Ellipsis />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardContent>
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <p class="text-sm font-medium">Hey, how are you doing?</p>
-                                        </div>
-                                        <div>
-                                            <Ellipsis />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
+                                    </CardContent>
+                                </Card>
+                            </Link>
                         </div>
                     </ScrollArea>
                 </div>  

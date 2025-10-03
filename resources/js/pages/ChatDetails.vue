@@ -18,16 +18,18 @@ import { show } from '@/actions/App/Http/Controllers/FileController';
 import { type BreadcrumbItem } from '@/types';
 import { Check, Circle, Dot } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
-import { Head, Form } from '@inertiajs/vue3';
+import { Head, Form, Link } from '@inertiajs/vue3';
 import { Ellipsis, Trash } from "lucide-vue-next";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import store from '@/actions/App/Http/Controllers/FileChatStoreController';
+import chatDetails from '@/actions/App/Http/Controllers/FileChatDetailsController';
 import { ref, onMounted } from 'vue';
 
 const props = defineProps<{
     file: any;
     conversation: any;
     messages: any;
+    conversations: any;
 }>();
 
 const disabledButton = ref(false);
@@ -77,12 +79,11 @@ onMounted(() => {
                 <div class="w-[70%]  h-[90%]">
                     <div class="h-full">
                         <div class="relative h-full flex flex-col items-center justify-between">
-                            <ScrollArea class="w-full rounded-md h-full p-2">
-                                <div class="space-y-2 border h-[30%]">
+                            <ScrollArea class="w-full rounded-md h-[100%] border p-2">
+                                <div class="flex flex-col space-y-2 border-4">
                                     <div v-for="message in messages.data" :key="message.id" class="flex" :class="message.participant === 'user' ? 'justify-end' : 'justify-start'">
                                         <div class="text-white rounded-4xl p-4  max-w-[70%]" :class="message.participant === 'user' ? 'bg-zinc-800' : 'bg-gray-900'">
                                             <p>
-                                                {{ message.participant  }}
                                                 {{ message.message }}
                                             </p>
                                         </div>
@@ -137,100 +138,33 @@ onMounted(() => {
                 <div class="w-1/3 h-[90%] border rounded-lg py-4 px-2">
                     <h1 class="text-lg font-bold text-center">Chat History</h1>
                     <ScrollArea class="h-[90%] w-full rounded-md">
-                        <div class="space-y-2 mt-2">
-                            <Card>
-                                <CardContent>
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <p class="text-sm font-medium">What is the capital of France?</p>
+                        <div class="mt-2 space-y-2">
+                            <Link
+                                v-for="conversation in conversations.data" :key="conversation.id"
+                                :href="chatDetails.url({ file: file.data.uuid, conversation: conversation.uuid })"
+                                class="block mt-3"
+                            >
+                                <Card>
+                                    <CardContent>
+                                        <div class="flex justify-between items-center">
+                                            <div>
+                                                <p class="text-sm font-medium">{{ conversation.message  }}</p>
+                                            </div>
+                                            <div>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger class="cursor-pointer"> <Ellipsis /></DropdownMenuTrigger>
+                                                    <DropdownMenuContent>
+                                                        <DropdownMenuItem class="cursor-pointer">
+                                                            <Trash class="text-red-500" />
+                                                            Delete Chat
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger class="cursor-pointer"> <Ellipsis /></DropdownMenuTrigger>
-                                                <DropdownMenuContent>
-                                                    <DropdownMenuItem class="cursor-pointer">
-                                                        <Trash class="text-red-500" />
-                                                        Delete Chat
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardContent>
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <p class="text-sm font-medium">Is the law the law?</p>
-                                        </div>
-                                        <div>
-                                            <Ellipsis />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardContent>
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <p class="text-sm font-medium">Hey, how are you doing?</p>
-                                        </div>
-                                        <div>
-                                            <Ellipsis />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardContent>
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <p class="text-sm font-medium">Hey, how are you doing?</p>
-                                        </div>
-                                        <div>
-                                            <Ellipsis />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardContent>
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <p class="text-sm font-medium">Hey, how are you doing?</p>
-                                        </div>
-                                        <div>
-                                            <Ellipsis />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardContent>
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <p class="text-sm font-medium">Hey, how are you doing?</p>
-                                        </div>
-                                        <div>
-                                            <Ellipsis />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardContent>
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <p class="text-sm font-medium">Hey, how are you doing?</p>
-                                        </div>
-                                        <div>
-                                            <Ellipsis />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
+                                    </CardContent>
+                                </Card>
+                            </Link>
                         </div>
                     </ScrollArea>
                 </div>  
