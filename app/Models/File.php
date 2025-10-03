@@ -6,6 +6,7 @@ use App\Enums\FileType;
 use App\Enums\FileStatus;
 use App\Traits\HasUuidColumn;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class File extends Model
@@ -42,5 +43,10 @@ class File extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class);
     }
 }

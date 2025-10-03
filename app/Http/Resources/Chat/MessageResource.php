@@ -17,6 +17,7 @@ class MessageResource extends JsonResource
         return [
             'id' => $this->id,
             'uuid' => $this->uuid,
+            'participant' => $this->participant,
             'message' => $this->message,
             'created_at' => $this->created_at->format('d M, Y'),
         ];

@@ -14,6 +14,10 @@ class ConversationResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'uuid' => $this->uuid,
+            'created_at' => $this->created_at->format('d M, Y'),
+        ];
     }
 }
