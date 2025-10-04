@@ -6,6 +6,7 @@ use App\Models\File;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
 use App\Enums\MessageParticipant;
+use App\Jobs\ProcessUserQueryJob;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,11 +31,13 @@ class FileChatStoreController extends Controller
                 }
 
 
-                $conversation->messages()->create([
+                $message = $conversation->messages()->create([
                     'user_id' => Auth::id(),
                     'message' => $request->message,
                     'participant' => MessageParticipant::USER,
                 ]);
+
+                ProcessUserQueryJob::dispatch($message);
 
                 return $conversation;
             });

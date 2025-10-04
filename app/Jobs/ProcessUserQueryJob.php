@@ -3,11 +3,14 @@
 namespace App\Jobs;
 
 use App\Facades\Llm;
+use App\Models\Message;
+use App\Events\MessageCreated;
 use App\Facades\VectorDatabase;
-use App\Services\VectorDatabase\Data\QdrantSearchPayload;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
+use App\Enums\MessageParticipant;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Services\VectorDatabase\Data\QdrantSearchPayload;
 
 class ProcessUserQueryJob implements ShouldQueue
 {
@@ -17,7 +20,7 @@ class ProcessUserQueryJob implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        protected string $query,
+        protected Message $message,
     ) {}
 
     /**
@@ -25,7 +28,7 @@ class ProcessUserQueryJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $embedResponse = Llm::embed(texts: $this->query);
+        $embedResponse = Llm::embed(texts: $this->message->message);
 
         $payload = QdrantSearchPayload::from([
             'vector' => $embedResponse,
@@ -41,10 +44,18 @@ class ProcessUserQueryJob implements ShouldQueue
             $context .= "---CHUNK {$i}---\n[doc: {$p['doc_id']}, page: {$p['page']}] \n".$p['text']."\n\n";
         }
 
-        $prompt = "You are an assistant. Use ONLY the documents below and cite sources.\n\nContext:\n{$context}\nUser: {$this->query}\nAnswer:";
+        $prompt = "You are an assistant. Use ONLY the documents below and cite sources.\n\nContext:\n{$context}\nUser: {$this->message->message}\nAnswer:";
 
         $llmResponse = Llm::prompt(prompt: $prompt);
 
-        Log::info('LLM response: '.$llmResponse);
+        $conversation = $this->message->conversation;
+
+        $conversation->messages()->create([
+            'user_id' => $this->message->user_id,
+            'message' => $llmResponse,
+            'participant' => MessageParticipant::ASSISTANT,
+        ]);
+
+        event(new MessageCreated($conversation));
     }
 }

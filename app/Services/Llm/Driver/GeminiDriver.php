@@ -27,8 +27,6 @@ class GeminiDriver implements InteractWithLlm
 
     public function embed(?string $texts = null, ?string $path = null): array
     {
-        Log::info('reached here');
-
         try {
             $response = Prism::embeddings()
                 ->using(Provider::Gemini, 'gemini-embedding-001')

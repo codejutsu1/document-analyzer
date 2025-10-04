@@ -140,7 +140,7 @@ const handleSuccess = () => {
                              :href="chatDetails.url({ file: file.data.uuid, conversation: conversation.uuid })"
                              class="block mt-3"
                             >
-                                <Card>
+                                <Card class="hover:bg-zinc-900">
                                     <CardContent>
                                         <div class="flex justify-between items-center">
                                             <div>

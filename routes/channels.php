@@ -1,8 +1,9 @@
 <?php
 
 use App\Models\File;
-use Illuminate\Support\Facades\Broadcast;
+use App\Models\Conversation;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Broadcast;
 
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
@@ -24,4 +25,15 @@ Broadcast::channel('user-files.{userId}', function ($user, $userId) {
     Log::info('user-files.' . $userId);
 
     return (int) $user->id === (int) $userId;
+});
+
+Broadcast::channel('message-created.{conversationId}', function ($user, $conversationId) {
+    Log::info('message-created.' . $conversationId);
+
+    $conversationExists = Conversation::where([
+        'id' => $conversationId,
+        'user_id' => $user->id,
+    ])->exists();
+
+    return $conversationExists;
 });

@@ -32,10 +32,12 @@ const props = defineProps<{
     conversations: any;
 }>();
 
+const emit = defineEmits(['addMessage']);
+
 const disabledButton = ref(false);
 
 if(props.messages.data.length > 0 && props.messages.data[props.messages.data.length - 1].participant === 'user') {
-    disabledButton.value = true;
+    disabledButton.value = false;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -65,6 +67,17 @@ const handleError = () => {
 onMounted(() => {
     console.log('mounted');
 })
+
+
+onMounted(() => {
+    window.Echo.private(`message-created.${props.conversation.data.id}`)
+        .listen('MessageCreated', (e) => {
+            disabledButton.value = false;
+            props.messages.data.push(e.message);
+            
+        });
+});
+
 </script>
 
 
@@ -81,7 +94,11 @@ onMounted(() => {
                         <div class="relative h-full flex flex-col items-center justify-between">
                             <ScrollArea class="w-full rounded-md h-[400px] p-2 mb-2">
                                 <div class="space-y-2">
-                                    <div v-for="message in messages.data" :key="message.id" class="flex" :class="message.participant === 'user' ? 'justify-end' : 'justify-start'">
+                                    <div 
+                                        v-for="message in messages.data" 
+                                        :key="message.id" class="flex" 
+                                        :class="message.participant === 'user' ? 'justify-end' : 'justify-start'"
+                                    >
                                         <div class="text-white rounded-4xl p-4  max-w-[70%]" :class="message.participant === 'user' ? 'bg-zinc-800' : 'bg-gray-900'">
                                             <p>
                                                 {{ message.message }}
@@ -140,15 +157,15 @@ onMounted(() => {
                     <ScrollArea class="h-[90%] w-full rounded-md">
                         <div class="mt-2 space-y-2">
                             <Link
-                                v-for="conversation in conversations.data" :key="conversation.id"
-                                :href="chatDetails.url({ file: file.data.uuid, conversation: conversation.uuid })"
+                                v-for="conversationData in conversations.data" :key="conversation.id"
+                                :href="chatDetails.url({ file: file.data.uuid, conversation: conversationData.uuid })"
                                 class="block mt-3"
                             >
-                                <Card>
+                                <Card :class="conversationData.uuid === conversation.data.uuid ? 'bg-zinc-900' : ''"  class="hover:bg-zinc-900">
                                     <CardContent>
                                         <div class="flex justify-between items-center">
                                             <div>
-                                                <p class="text-sm font-medium">{{ conversation.message  }}</p>
+                                                <p class="text-sm font-medium">{{ conversationData.message  }}</p>
                                             </div>
                                             <div>
                                                 <DropdownMenu>

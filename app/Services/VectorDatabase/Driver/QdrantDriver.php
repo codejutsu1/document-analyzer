@@ -21,16 +21,11 @@ class QdrantDriver implements InteractWithVectorDatabase
 
     public function upsert(QdrantUpsertPayload $data): void
     {
-        Log::info('Reached here driver');
-
         $response = $this->connector->send(new UpsertRequest($data));
 
         if ($response->failed()) {
             Log::error('Vector database upsert failed', [
                 'status' => $response->status(),
-                'body' => $response->body(),   // raw body (could be text, empty, or JSON)
-                'json' => $response->json(),   // attempt JSON decode (null if invalid)
-                'headers' => $response->headers(),
             ]);
             // throw new PaymentException(
             //     message: 'Failed to initiate transaction.',
@@ -41,14 +36,11 @@ class QdrantDriver implements InteractWithVectorDatabase
 
         Log::info('Vector database upsert response', [
             'status' => $response->status(),
-            'json' => $response->json(),
         ]);
     }
 
     public function search(QdrantSearchPayload $data): array
     {
-        Log::info('Reached here driver');
-
         $response = $this->connector->send(new QueryRequest($data));
 
         if ($response->failed()) {
@@ -61,7 +53,6 @@ class QdrantDriver implements InteractWithVectorDatabase
 
         Log::info('Vector database search response', [
             'status' => $response->status(),
-            'json' => $response->json(),
         ]);
 
         return $response->json()['result'];
