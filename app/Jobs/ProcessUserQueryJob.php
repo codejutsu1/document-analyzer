@@ -37,6 +37,8 @@ class ProcessUserQueryJob implements ShouldQueue
 
         $results = VectorDatabase::search($payload);
 
+        Log::info('Results', ['results' => $results]);
+
         $context = '';
 
         foreach ($results as $i => $h) {
@@ -44,9 +46,11 @@ class ProcessUserQueryJob implements ShouldQueue
             $context .= "---CHUNK {$i}---\n[doc: {$p['doc_id']}, page: {$p['page']}] \n".$p['text']."\n\n";
         }
 
-        $prompt = "You are an assistant. Use ONLY the documents below and cite sources.\n\nContext:\n{$context}\nUser: {$this->message->message}\nAnswer:";
+        $prompt = "\n\nContext:\n{$context}\nUser: {$this->message->message}\nAnswer:";
 
         $llmResponse = Llm::prompt(prompt: $prompt);
+
+        Log::info('LLM Response', ['llmResponse' => $llmResponse]);
 
         $conversation = $this->message->conversation;
 

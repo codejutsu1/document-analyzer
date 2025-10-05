@@ -23,7 +23,7 @@ import { Ellipsis, Trash } from "lucide-vue-next";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import store from '@/actions/App/Http/Controllers/FileChatStoreController';
 import chatDetails from '@/actions/App/Http/Controllers/FileChatDetailsController';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 
 const props = defineProps<{
     file: any;
@@ -35,6 +35,8 @@ const props = defineProps<{
 const emit = defineEmits(['addMessage']);
 
 const disabledButton = ref(false);
+
+const scrollAreaRef = ref<{ $el: HTMLElement } | null>(null)
 
 if(props.messages.data.length > 0 && props.messages.data[props.messages.data.length - 1].participant === 'user') {
     disabledButton.value = false;
@@ -64,10 +66,6 @@ const handleError = () => {
     console.log('error');
 }
 
-onMounted(() => {
-    console.log('mounted');
-})
-
 
 onMounted(() => {
     window.Echo.private(`message-created.${props.conversation.data.id}`)
@@ -77,6 +75,7 @@ onMounted(() => {
             
         });
 });
+
 
 </script>
 
@@ -92,7 +91,7 @@ onMounted(() => {
                 <div class="w-[70%] h-full">
                     <div class="h-full">
                         <div class="relative h-full flex flex-col items-center justify-between">
-                            <ScrollArea class="w-full rounded-md h-[400px] p-2 mb-2">
+                            <ScrollArea ref="scrollAreaRef" class="w-full rounded-md h-[400px] p-2 mb-2">
                                 <div class="space-y-2">
                                     <div 
                                         v-for="message in messages.data" 
