@@ -35,11 +35,17 @@ class ProcessDocumentJob implements ShouldQueue
        
         $jobs = [];
 
+        $chunks = array_slice($chunks, 0, 2);
+
         foreach ($chunks as $chunk) {
             $jobs[] = new ProcessChunkJob($chunk, $this->file);
         }
 
         $jobs[] = new FinalizeFileJob($this->file);
+
+        // $this->file->total_chunks = $chuckCount;
+        $this->file->total_chunks = 2;
+        $this->file->save();
 
         Log::info("Started processing $chuckCount chunks");
 

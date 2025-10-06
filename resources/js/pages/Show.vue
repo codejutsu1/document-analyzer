@@ -20,16 +20,16 @@ import { Check, Circle, Dot, Loader2 } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Head } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
+import files from '@/routes/files';
 
 const props = defineProps<{
     file: any;
 }>();
 
-const chunkingStatus = ref(props.file.data.chunking_status);
-const embeddingStatus = ref(props.file.data.embedding_status);
-const storageStatus = ref(props.file.data.storage_status);
+const fileStatus = ref(props?.file?.data?.status);
 
 const progressPercentage = ref(0);
+progressPercentage.value = props.file.data.progress;
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -51,61 +51,34 @@ onMounted(() => {
     window.Echo.private(`file-status.${props.file.data.id}`)
         .listen('FilesStatusUpdated', (e) => {
             console.log("working");
-            console.log("Chunking Status: ", e.file.chunking_status);
-            console.log("Embedding Status: ", e.file.embedding_status);
-            console.log("Storage Status: ", e.file.storage_status);
 
-            chunkingStatus.value = e.file.chunking_status;
-            embeddingStatus.value = e.file.embedding_status;
-            storageStatus.value = e.file.storage_status;
+            progressPercentage.value = e.progress;
 
-            if(e.file.chunking_status === 'completed') {
-                progressPercentage.value = 33;
-            }
-
-            if(e.file.chunking_status === 'completed' && e.file.embedding_status === 'completed') {
-                progressPercentage.value = 66;
-            }
-            if(e.file.chunking_status === 'completed' && e.file.embedding_status === 'completed' && e.file.storage_status === 'completed') {
+            if(e.progress > 100) {
                 progressPercentage.value = 100;
             }
+
+            fileStatus.value = e.status;
         });
 });
 
-    if(chunkingStatus.value === 'completed') {
-        progressPercentage.value = 33;
-    }
-
-    if(chunkingStatus.value === 'completed' && embeddingStatus.value === 'completed') {
-        progressPercentage.value = 66;
-    }
-    if(chunkingStatus.value === 'completed' && embeddingStatus.value === 'completed' && storageStatus.value === 'completed') {
-        progressPercentage.value = 100;
-    }
-
-
 
 const steps = [
-  {
-    step: 1,
-    title: "Chunking",
-    description:
-        "Splitting file into chunks",
-    status: chunkingStatus,
+    {
+        step: 1,
+        title: "Chunking",
+        description: "Splitting file into chunks",
     },
-  {
-    step: 2,
-    title: "Embeddings",
-    description: "Generating embeddings",
-    status: embeddingStatus,
+    {
+        step: 2,
+        title: "Embeddings",
+        description: "Generating embeddings",
     },
-  {
-    step: 3,
-    title: "Storage",
-    description:
-        "Saving embeddings to vector storage",
-    status: storageStatus,
-  },
+    {
+        step: 3,
+        title: "Storage",
+        description: "Saving embeddings to vector storage",
+    },
 ]
 
 </script>
@@ -154,9 +127,9 @@ const steps = [
                                 <div class="flex items-start">
                                     <span class="text-gray-400 text-sm w-1/5">Status: </span>
                                     <div class="flex items-center">
-                                        <span v-if="file?.data?.status === 'completed'" class="font-medium w-4/5"><Badge variant="outline" class="bg-green-500">Completed</Badge></span>
-                                        <span v-if="file?.data?.status === 'failed'" class="font-medium w-4/5"><Badge variant="outline" class="bg-red-500">Failed</Badge></span>
-                                        <span v-if="file?.data?.status === 'processing'" class="font-medium w-4/5"><Badge variant="outline" class="bg-yellow-500"><Loader2 class="w-10 h-10 animate-spin"></Loader2>Processing</Badge></span>
+                                        <span v-if="fileStatus === 'completed'" class="font-medium w-4/5"><Badge variant="outline" class="bg-green-500">Completed</Badge></span>
+                                        <span v-if="fileStatus === 'failed'" class="font-medium w-4/5"><Badge variant="outline" class="bg-red-500">Failed</Badge></span>
+                                        <span v-if="fileStatus === 'processing'" class="font-medium w-4/5"><Badge variant="outline" class="bg-yellow-500"><Loader2 class="w-10 h-10 animate-spin"></Loader2>Processing</Badge></span>
                                     </div>
                                 </div>
                             </div>
@@ -165,49 +138,6 @@ const steps = [
                     </CardContent>
                 </Card>
                 <div>
-                    <!-- <Stepper orientation="vertical" class="mx-auto flex w-full max-w-md flex-col justify-start gap-10">
-                        <StepperItem
-                            v-for="step in steps"
-                            :key="step.step"
-                            v-slot="{ state }"
-                            class="relative flex w-full items-start gap-6"
-                            :step="step.step"
-                        >
-                        <StepperSeparator
-                            v-if="step.step !== steps[steps.length - 1].step"
-                            class="absolute left-[18px] top-[38px] block h-[105%] w-0.5 shrink-0 rounded-full bg-muted group-data-[state=completed]:bg-primary"
-                        />
-
-                        <StepperTrigger as-child>
-                            <Button
-                                :variant="step.status.value === 'completed' || step.status.value === 'active' ? 'default' : 'outline'"
-                                size="icon"
-                                class="z-10 rounded-full shrink-0 pointer-events-none"
-                                :class="[step.status.value === 'pending' && 'ring-2 ring-ring ring-offset-2 ring-offset-background']"
-                            >
-                                <Check v-if="step.status.value === 'completed'" class="size-5" />
-                                <Circle v-if="step.status.value === 'active'" />
-                                <Dot v-if="step.status.value === 'failed'" />
-                            </Button>
-                        </StepperTrigger>
-
-                        <div class="flex flex-col gap-1">
-                            <StepperTitle
-                            :class="[state === 'active' && 'text-primary']"
-                            class="text-sm font-semibold transition lg:text-base"
-                            >
-                            {{ step.title }}
-                            </StepperTitle>
-                            <StepperDescription
-                            :class="[state === 'active' && 'text-primary']"
-                            class="sr-only text-xs text-muted-foreground transition md:not-sr-only lg:text-sm"
-                            >
-                            {{ step.description }}
-                            </StepperDescription>
-                        </div>
-                        </StepperItem>
-                    </Stepper> -->
-
                     <div class="max-w-3xl mx-auto p-6">
                         <div class="flex items-center justify-between mb-4">
                             <div>

@@ -25,9 +25,18 @@ class FinalizeFileJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->file->status = FileStatus::COMPLETED;
-        $this->file->save();
+        if($this->file->processed_chunks > $this->file->total_chunks) {
+            $this->file->processed_chunks = $this->file->total_chunks;
+            $this->file->save();
+            $this->file->refresh();
+        }
 
-        event(new FilesStatusUpdated($this->file));
+        if($this->file->processed_chunks == $this->file->total_chunks) {
+            $this->file->status = FileStatus::COMPLETED;
+            $this->file->save();
+
+            
+            event(new FilesStatusUpdated($this->file));
+        }
     }
 }

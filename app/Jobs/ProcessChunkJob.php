@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Facades\Llm;
 use App\Models\File;
 use App\Enums\FileStatus;
+use App\Events\FileProgressUpdated;
 use Illuminate\Support\Str;
 use App\Facades\VectorDatabase;
 use App\Events\FilesStatusUpdated;
@@ -43,12 +44,6 @@ class ProcessChunkJob implements ShouldQueue
     {
         $embedding = Llm::embed($this->chunk['text']);
 
-        $this->file->embedding_status = FileStatus::COMPLETED;
-        $this->file->storage_status = FileStatus::ACTIVE;
-        $this->file->save();
-
-        event(new FilesStatusUpdated($this->file));
-
         $uuid = Str::uuid();
 
         $payload = QdrantUpsertPayload::from([
@@ -73,10 +68,10 @@ class ProcessChunkJob implements ShouldQueue
 
         Log::info('Chunk '.$this->chunk['chunk_index'].' processed successfully');
 
-        $this->file->storage_status = FileStatus::COMPLETED;
+        $this->file->processed_chunks = $this->file->processed_chunks + 1;
         $this->file->save();
 
-        event(new FilesStatusUpdated($this->file)); 
+        event(new FilesStatusUpdated($this->file));
 
             // '595c678e-b6b3-4dac-8a51-b316cf03a50a';
     }
@@ -90,7 +85,7 @@ class ProcessChunkJob implements ShouldQueue
         $this->file->embedding_status = FileStatus::FAILED;
         $this->file->save();
 
-        event(new FilesStatusUpdated($this->file));
+        event(new FileProgressUpdated($this->file));
 
         $this->release(10);
     }

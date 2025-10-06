@@ -22,9 +22,9 @@ class FileShowResource extends JsonResource
             'author' => $this->author,
             'pages' => $this->pages,
             'status' => $this->status,
-            'chunking_status' => $this->chunking_status,
-            'embedding_status' => $this->embedding_status,
-            'storage_status' => $this->storage_status,
+            'progress' => $this->total_chunks > 0 
+                                ? round(($this->processed_chunks / $this->total_chunks) * 100)
+                                : 0,
             'created_at' => $this->created_at->format('d M, Y'),
             'type' => strtoUpper($this->type->value),
         ];

@@ -16,7 +16,7 @@ class File extends Model
     protected $fillable = [
         'user_id',
         'path',
-        'name',
+        'name', 
         'size',
         'author',
         'pages',
@@ -25,6 +25,8 @@ class File extends Model
         'chunking_status',
         'embedding_status',
         'storage_status',
+        'total_chunks',
+        'processed_chunks',
     ];
 
     public function getRouteKeyName(): string
@@ -37,6 +39,8 @@ class File extends Model
         return [
             'type' => FileType::class,
             'status' => FileStatus::class,
+            'total_chunks' => 'integer',
+            'processed_chunks' => 'integer',
         ];
     }
 

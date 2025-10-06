@@ -48,7 +48,8 @@ Route::get('pdf', function () {
     // $file->save();
     // event(new FilesStatusUpdated(File::find(1)));
 
-    event(new FileDetailsUpdated(File::find(1)));
+    // event(new ProcessDocumentJob(File::find(1)));
+    ProcessDocumentJob::dispatch(File::find(1));
 
     dd('live');
 });

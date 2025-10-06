@@ -21,11 +21,18 @@ Broadcast::channel('file-status.{id}', function ($user, $id) {
     return $fileExists;
 });
 
-Broadcast::channel('user-files.{userId}', function ($user, $userId) {
-    Log::info('user-files.' . $userId);
+Broadcast::channel('file-progress.{id}', function ($user, $id) {
+    Log::info('file-progress.' . $id);
 
-    return (int) $user->id === (int) $userId;
+    $fileExists = File::where('id', $id)
+        ->where('user_id', $user->id)
+        ->exists();
+
+    Log::info('fileExists: ' . $fileExists);
+
+    return $fileExists;
 });
+
 
 Broadcast::channel('message-created.{conversationId}', function ($user, $conversationId) {
     Log::info('message-created.' . $conversationId);

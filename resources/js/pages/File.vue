@@ -194,11 +194,23 @@ const handleError = (page: any) => {
                                 <Eye class="mr-2 h-4 w-4" /> See Details
                             </Button>
                         </Link>
-                        <Link :href="chat.url(file.uuid)" class="w-full" :disabled="file.status !== 'completed'">
+                        <Link
+                            v-if="file.status === 'completed'"
+                            :href="chat.url(file.uuid)"
+                            class="w-full"
+                        >
                             <Button class="w-full cursor-pointer">
                                 <BotMessageSquare class="mr-2 h-4 w-4" /> Chat AI Assistant
                             </Button>
                         </Link>
+
+                        <Button
+                            v-else
+                            class="w-full cursor-not-allowed opacity-60"
+                            disabled
+                        >
+                            <BotMessageSquare class="mr-2 h-4 w-4" /> Chat AI Assistant
+                        </Button>
                     </CardFooter>
                 </Card>
                 

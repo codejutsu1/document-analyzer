@@ -34,4 +34,21 @@ class FilesStatusUpdated implements ShouldBroadcast
             new PrivateChannel('file-status.' . $this->file->id),
         ];
     }
+
+    public function broadcastWith(): array
+    {
+        $progress = 0;
+
+        if ($this->file->total_chunks > 0) {
+            $progress = round(($this->file->processed_chunks / $this->file->total_chunks) * 100);
+        }
+    
+        return [
+            'uuid' => $this->file->uuid,
+            'processed' => $this->file->processed_chunks,
+            'total' => $this->file->total_chunks,
+            'progress' => $progress,
+            'status' => $this->file->status,
+        ];
+    }
 }

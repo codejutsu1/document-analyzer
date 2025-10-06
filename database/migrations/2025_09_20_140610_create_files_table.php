@@ -32,6 +32,9 @@ return new class extends Migration
             $table->string('embedding_status')->default(FileStatus::PENDING);
             $table->string('storage_status')->default(FileStatus::PENDING);
 
+            $table->string('total_chunks')->default(0);
+            $table->string('processed_chunks')->default(0);
+
 
             $table->timestamps();
         });
