@@ -36,7 +36,9 @@ const emit = defineEmits(['addMessage']);
 
 const disabledButton = ref(false);
 
-const scrollAreaRef = ref<{ $el: HTMLElement } | null>(null)
+const scrollAreaRef = ref<{ $el: HTMLElement } | null>(null);
+
+const chatContainerRef = ref<{ $el: HTMLElement } | null>(null);
 
 if(props.messages.data.length > 0 && props.messages.data[props.messages.data.length - 1].participant === 'user') {
     disabledButton.value = false;
@@ -70,12 +72,19 @@ const handleError = () => {
 onMounted(() => {
     window.Echo.private(`message-created.${props.conversation.data.id}`)
         .listen('MessageCreated', (e) => {
+            scrollToBottom();
             disabledButton.value = false;
             props.messages.data.push(e.message);
-            
         });
 });
 
+const scrollToBottom = () => {
+    chatContainerRef.value?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+onMounted(() => {
+    scrollToBottom();
+})
 
 </script>
 
@@ -105,6 +114,8 @@ onMounted(() => {
                                         </div>
                                     </div>
                                 </div>
+
+                                <div ref="chatContainerRef"></div>
                             </ScrollArea>
                             <Form
                                 :action="store.url({ file: file.data.uuid, conversation: conversation.data.uuid })"
