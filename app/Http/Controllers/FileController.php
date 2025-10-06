@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\File;
 use App\Models\User;
 use Inertia\Inertia;
-use App\Jobs\ProcessFileJob;
 use App\Enums\FileStatus;
+use Illuminate\Support\Str;
+use App\Jobs\ProcessFileJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -62,8 +63,16 @@ class FileController extends Controller
                 /** @var User $user */
                 $user = Auth::user();
 
+                $userFolder = "files/user_{$user->id}";
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension    = $file->getClientOriginalExtension();
+                
+                $cleanName = Str::slug($originalName, '_') . '.' . $extension;                
+
+                $path = $file->storeAs($userFolder, $cleanName, 'public');
+
                $fileModel = $user->files()->create([
-                'path' => $file->store('files', 'public'),
+                'path' => $path,
                 'size' => round(($file->getSize() / 1024) / 1024, 2),
                 'status' => FileStatus::PROCESSING,
                ]);
