@@ -84,7 +84,7 @@ const scrollToBottom = () => {
 
 onMounted(() => {
     scrollToBottom();
-})
+});
 
 </script>
 
