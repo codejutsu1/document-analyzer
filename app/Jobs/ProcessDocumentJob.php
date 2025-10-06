@@ -31,15 +31,7 @@ class ProcessDocumentJob implements ShouldQueue
 
         $chunks = $this->chuckText($pdfText, 1500, 500);
 
-        // Log::info('Processing chunk: '.$chunks[0]['chunk_index']);
-
-        $this->file->chunking_status = FileStatus::COMPLETED;
-        $this->file->embedding_status = FileStatus::ACTIVE;
-        $this->file->save();
-
-        Log::info('File event dispatched!');
-
-        event(new FilesStatusUpdated($this->file));
+        $chuckCount = count($chunks);
        
         $jobs = [];
 
@@ -48,6 +40,8 @@ class ProcessDocumentJob implements ShouldQueue
         }
 
         $jobs[] = new FinalizeFileJob($this->file);
+
+        Log::info("Started processing $chuckCount chunks");
 
         Bus::chain($jobs)->dispatch();
     }

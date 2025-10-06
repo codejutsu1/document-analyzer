@@ -154,7 +154,7 @@ const steps = [
                                 <div class="flex items-start">
                                     <span class="text-gray-400 text-sm w-1/5">Status: </span>
                                     <div class="flex items-center">
-                                        <span v-if="file?.data?.status === 'active'" class="font-medium w-4/5"><Badge variant="outline" class="bg-green-500">Completed</Badge></span>
+                                        <span v-if="file?.data?.status === 'completed'" class="font-medium w-4/5"><Badge variant="outline" class="bg-green-500">Completed</Badge></span>
                                         <span v-if="file?.data?.status === 'failed'" class="font-medium w-4/5"><Badge variant="outline" class="bg-red-500">Failed</Badge></span>
                                         <span v-if="file?.data?.status === 'processing'" class="font-medium w-4/5"><Badge variant="outline" class="bg-yellow-500"><Loader2 class="w-10 h-10 animate-spin"></Loader2>Processing</Badge></span>
                                     </div>
@@ -219,7 +219,7 @@ const steps = [
                         <!-- Progress bar -->
                         <div class="relative h-3 rounded-full bg-gray-200 overflow-hidden mb-6">
                             <!-- filled portion -->
-                            <div class="absolute left-0 top-0 h-full bg-blue-500 rounded-full transition-all duration-500 ease-out" :style="{ width: progressPercentage + '%' }"></div>
+                            <div class="absolute left-0 top-0 h-full bg-blue-500 rounded-full transition-all duration-500 ease-out" :class="progressPercentage === 100 ? 'bg-green-500' : 'bg-blue-500'" :style="{ width: progressPercentage + '%' }"></div>
                         </div>
 
 
@@ -228,15 +228,15 @@ const steps = [
                             <Card v-for="step in steps" :key="step.step">
                                 <CardContent>
                                     <div class="flex gap-4 items-start">
-                                        <div v-if="step.status.value === 'completed'" class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-medium">✓</div>
-                                        <div v-if="step.status.value === 'active'" class="w-8 h-8 rounded-full border-2 border-blue-600 bg-white text-blue-600 flex items-center justify-center text-sm font-medium animate-pulse">●</div>
-                                        <div v-if="step.status.value === 'pending'" class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-sm font-medium">{{ step.step }}</div>
+                                        <!-- <div v-if="step.status.value === 'completed'" class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-medium">✓</div> -->
+                                        <!-- <div v-if="step.status.value === 'active'" class="w-8 h-8 rounded-full border-2 border-blue-600 bg-white text-blue-600 flex items-center justify-center text-sm font-medium animate-pulse">●</div> -->
+                                        <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-sm font-medium">{{ step.step }}</div>
                                         <div class="flex-1">
                                             <div class="flex items-center justify-between">
                                             <div>
+                                                <!-- :class="step.status.value === 'completed' ? 'text-green-600' : (step.status.value === 'active' ? 'text-blue-600 animate-pulse' : 'text-gray-600')" -->
                                                 <div 
-                                                    class="text-sm font-semibold"
-                                                    :class="step.status.value === 'completed' ? 'text-green-600' : (step.status.value === 'active' ? 'text-blue-600 animate-pulse' : 'text-gray-600')"
+                                                    class="text-sm font-semibold text-gray-600"
                                                 >{{ step.title }}</div>
                                                 <div class="text-xs text-gray-500">{{ step.description }}</div>
                                             </div>

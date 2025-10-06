@@ -20,7 +20,7 @@ import {
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Eye } from 'lucide-vue-next';
-import { dashboard } from '@/routes';
+import { dashboard, chat } from '@/routes';
 import { index, store, show } from '@/actions/App/Http/Controllers/FileController';
 import { type BreadcrumbItem } from '@/types';
 import { BotMessageSquare, File } from 'lucide-vue-next';
@@ -84,23 +84,6 @@ const handleError = (page: any) => {
         file.value = null;
     } 
 };
-
-
-onMounted(() => {
-    const userId = page?.props?.auth?.user?.id;
-
-    // window.Echo.private(`user-files.${userId}`) 
-    //     .listen('FileDetailsUpdated', (e) => {
-    //         console.log(e.file);
-    //         console.log("working");
-    //     });
-});
-
-
-// onUnmounted(() => {
-//     const userId = page?.props?.auth?.user?.id;
-//     window.Echo.leave(`private-user-files.${userId}`);
-// });
 </script>
 
 
@@ -199,7 +182,7 @@ onMounted(() => {
                                     <p class="text-xs text-gray-500">{{ file.created_at  }} - ({{  file.size }})</p>
                                 </div>
                                 <Badge v-if="file.status === 'processing'" variant="outline" class="bg-yellow-500 mt-2"><Loader2 class="w-10 h-10 animate-spin"></Loader2>Processing</Badge>
-                                <Badge v-else-if="file.status === 'active'" variant="outline" class="bg-green-500 mt-2">Completed</Badge>
+                                <Badge v-else-if="file.status === 'completed'" variant="outline" class="bg-green-500 mt-2">Completed</Badge>
                                 <Badge v-else-if="file.status === 'failed'" variant="outline" class="bg-red-500 mt-2">Failed</Badge>
                             </div>
                           </div>
@@ -211,9 +194,11 @@ onMounted(() => {
                                 <Eye class="mr-2 h-4 w-4" /> See Details
                             </Button>
                         </Link>
-                        <Button class="w-full cursor-pointer" disabled>
-                            <BotMessageSquare class="mr-2 h-4 w-4" /> Chat AI Assistant
-                        </Button>
+                        <Link :href="chat.url(file.uuid)" class="w-full" :disabled="file.status !== 'completed'">
+                            <Button class="w-full cursor-pointer">
+                                <BotMessageSquare class="mr-2 h-4 w-4" /> Chat AI Assistant
+                            </Button>
+                        </Link>
                     </CardFooter>
                 </Card>
                 
