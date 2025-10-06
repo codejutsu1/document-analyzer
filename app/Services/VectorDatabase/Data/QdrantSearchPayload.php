@@ -12,5 +12,6 @@ class QdrantSearchPayload extends Data
     public function __construct(
         public readonly array $vector,
         public readonly int $limit,
+        public readonly ?string $doc_id = null,
     ) {}
 }

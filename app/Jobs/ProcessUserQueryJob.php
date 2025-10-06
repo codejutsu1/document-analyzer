@@ -21,6 +21,7 @@ class ProcessUserQueryJob implements ShouldQueue
      */
     public function __construct(
         protected Message $message,
+        protected ?string $doc_id = null,
     ) {}
 
     /**
@@ -33,6 +34,7 @@ class ProcessUserQueryJob implements ShouldQueue
         $payload = QdrantSearchPayload::from([
             'vector' => $embedResponse,
             'limit' => 10,
+            'doc_id' => $this->doc_id,
         ]);
 
         $results = VectorDatabase::search($payload);

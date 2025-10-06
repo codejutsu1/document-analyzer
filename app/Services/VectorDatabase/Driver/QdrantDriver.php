@@ -53,6 +53,7 @@ class QdrantDriver implements InteractWithVectorDatabase
 
         Log::info('Vector database search response', [
             'status' => $response->status(),
+            // 'json' => $response->json(),
         ]);
 
         return $response->json()['result'];

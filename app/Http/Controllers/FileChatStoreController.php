@@ -37,7 +37,7 @@ class FileChatStoreController extends Controller
                     'participant' => MessageParticipant::USER,
                 ]);
 
-                ProcessUserQueryJob::dispatch($message);
+                ProcessUserQueryJob::dispatch($message, $file->path);
 
                 return $conversation;
             });

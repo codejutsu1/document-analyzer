@@ -62,6 +62,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const handleSuccess = () => {
     console.log('success');
     disabledButton.value = true;
+    scrollToBottom();
 }
 
 const handleError = () => {
@@ -72,9 +73,9 @@ const handleError = () => {
 onMounted(() => {
     window.Echo.private(`message-created.${props.conversation.data.id}`)
         .listen('MessageCreated', (e) => {
-            scrollToBottom();
             disabledButton.value = false;
             props.messages.data.push(e.message);
+            scrollToBottom();
         });
 });
 

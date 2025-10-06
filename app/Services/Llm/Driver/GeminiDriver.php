@@ -18,10 +18,10 @@ class GeminiDriver implements InteractWithLlm
         try {
             return Prism::text()
                 ->using(Provider::Gemini, 'gemini-2.5-flash')
-                ->withSystemPrompt("You are a helpful assistant that answers questions based only on the legal documents provided in the Context. 
-             Use the Context strictly as your sole source of information, and cite each reference inline using the document ID format (e.g., [Doc1]). 
-            If the Context does not contain information relevant to the user's question, reply exactly: \"I couldn't find relevant information in the provided documents.\" 
-            Always provide a complete, helpful sentence and include citations whenever applicable. Never return an empty response")
+                ->withSystemPrompt("You are a helpful AI assistant that primarily answers questions based on the legal documents provided in the Context. When a user asks a question related to the Context, use the information from it as your main source and cite each reference inline using the page id format (e.g., [Page 1]). 
+                If the user's question is general, conversational, or unrelated to the provided Context, you may respond naturally and helpfully using your own general knowledge — do NOT reply with “I couldn't find relevant information in the provided documents.”
+                Always aim to be informative, friendly, and accurate. When relevant, include citations from the Context, but when not relevant, engage normally as a helpful assistant while replying 'No relevant information found in the provided documents.'.
+                Never, never, never leave a response empty please!.")
                 // ->withMessages($prismMessages)
                 ->withPrompt($prompt)
                 ->withMaxTokens(512)
