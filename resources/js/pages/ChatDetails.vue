@@ -41,7 +41,7 @@ const scrollAreaRef = ref<{ $el: HTMLElement } | null>(null);
 const chatContainerRef = ref<{ $el: HTMLElement } | null>(null);
 
 if(props.messages.data.length > 0 && props.messages.data[props.messages.data.length - 1].participant === 'user') {
-    disabledButton.value = false;
+    disabledButton.value = true;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -59,6 +59,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const scrollToBottom = async () => {
+    await nextTick();
+    chatContainerRef.value?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
 const handleSuccess = () => {
     console.log('success');
     disabledButton.value = true;
@@ -70,18 +75,17 @@ const handleError = () => {
 }
 
 
+
 onMounted(() => {
     window.Echo.private(`message-created.${props.conversation.data.id}`)
-        .listen('MessageCreated', (e) => {
+        .listen('MessageCreated', async (e) => {
             disabledButton.value = false;
             props.messages.data.push(e.message);
+            await nextTick();
             scrollToBottom();
         });
 });
 
-const scrollToBottom = () => {
-    chatContainerRef.value?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-}
 
 onMounted(() => {
     scrollToBottom();

@@ -147,11 +147,15 @@ const steps = [
                         </div>
 
                         <!-- Progress bar -->
-                        <div class="relative h-3 rounded-full bg-gray-200 overflow-hidden mb-6">
+                        <div class="relative h-3 rounded-full bg-gray-200 overflow-hidden">
                             <!-- filled portion -->
                             <div class="absolute left-0 top-0 h-full bg-blue-500 rounded-full transition-all duration-500 ease-out" :class="progressPercentage === 100 ? 'bg-green-500' : 'bg-blue-500'" :style="{ width: progressPercentage + '%' }"></div>
                         </div>
-
+                        
+                        <div class="mt-2 mb-6">
+                            <span class="text-sm text-gray-200 font-medium">{{ progressPercentage }}/100</span>
+                        </div>
+                        
 
                         <!-- Details / timeline -->
                         <div class="space-y-3 shadow-sm divide-y">
