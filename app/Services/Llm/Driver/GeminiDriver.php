@@ -34,7 +34,7 @@ class GeminiDriver implements InteractWithLlm
 
             return '';
         }
-        
+
     }
 
     public function embed(?string $texts = null, ?string $path = null): array

@@ -2,11 +2,11 @@
 
 namespace App\Jobs;
 
-use App\Models\File;
 use App\Enums\FileStatus;
 use App\Events\FilesStatusUpdated;
-use Illuminate\Foundation\Queue\Queueable;
+use App\Models\File;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 
 class FinalizeFileJob implements ShouldQueue
 {
@@ -25,17 +25,17 @@ class FinalizeFileJob implements ShouldQueue
      */
     public function handle(): void
     {
-        if($this->file->processed_chunks > $this->file->total_chunks) {
+        if ($this->file->processed_chunks > $this->file->total_chunks) {
             $this->file->processed_chunks = $this->file->total_chunks;
             $this->file->save();
             $this->file->refresh();
         }
 
-        if($this->file->processed_chunks == $this->file->total_chunks) {
+        if ($this->file->processed_chunks == $this->file->total_chunks) {
+            /* @phpstan-ignore-next-line */
             $this->file->status = FileStatus::COMPLETED;
             $this->file->save();
 
-            
             event(new FilesStatusUpdated($this->file));
         }
     }

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\File;
-use App\Models\Conversation;
-use Illuminate\Http\Request;
 use App\Enums\MessageParticipant;
 use App\Jobs\ProcessUserQueryJob;
-use Illuminate\Support\Facades\DB;
+use App\Models\Conversation;
+use App\Models\File;
+use App\Models\Message;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class FileChatStoreController extends Controller
 {
@@ -23,14 +24,14 @@ class FileChatStoreController extends Controller
 
         try {
             $conversation = DB::transaction(function () use ($request, $conversation, $file) {
-                if (empty($conversation->getAttributes())) { 
+                if (empty($conversation->getAttributes())) {
                     $conversation = Conversation::create([
                         'user_id' => Auth::id(),
                         'file_id' => $file->id,
                     ]);
                 }
 
-
+                /** @var Message $message */
                 $message = $conversation->messages()->create([
                     'user_id' => Auth::id(),
                     'message' => $request->message,
@@ -47,11 +48,9 @@ class FileChatStoreController extends Controller
                 'data' => [
                     'conversation_uuid' => $conversation->uuid,
                 ],
-            ]);    
+            ]);
         } catch (\Throwable $th) {
             report($th);
-
-            dd($th->getMessage());
 
             return redirect()->back()->withErrors(['message' => 'Message sending failed']);
         }

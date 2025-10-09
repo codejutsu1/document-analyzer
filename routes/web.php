@@ -1,17 +1,16 @@
 <?php
 
-use App\Models\File;
-use Inertia\Inertia;
 use App\Enums\FileStatus;
+use App\Events\FilesStatusUpdated;
+use App\Http\Controllers\FileChatController;
+use App\Http\Controllers\FileChatDetailsController;
+use App\Http\Controllers\FileChatStoreController;
+use App\Http\Controllers\FileController;
 use App\Jobs\ProcessDocumentJob;
 use App\Jobs\ProcessUserQueryJob;
-use App\Events\FileDetailsUpdated;
-use App\Events\FilesStatusUpdated;
+use App\Models\File;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FileController;
-use App\Http\Controllers\FileChatController;
-use App\Http\Controllers\FileChatStoreController;
-use App\Http\Controllers\FileChatDetailsController;
+use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -26,7 +25,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('files/{file}/chats', FileChatController::class)->name('chat');
     Route::post('/files/{file:uuid}/chats/{conversation:uuid?}', FileChatStoreController::class)->name('chat.store');
-    
+
     Route::get('files/{file:uuid}/c/{conversation:uuid}', FileChatDetailsController::class)->name('chat.details');
 
 });
@@ -42,7 +41,7 @@ Route::get('pdf', function () {
     // $file->embedding_status = FileStatus::ACTIVE;
 
     // $file->embedding_status = FileStatus::COMPLETED;
-    // $file->storage_status = FileStatus::ACTIVE;   
+    // $file->storage_status = FileStatus::ACTIVE;
 
     // $file->storage_status = FileStatus::COMPLETED;
     // $file->save();

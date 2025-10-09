@@ -14,14 +14,16 @@ class FileIndexResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [  
-            'id' => $this->id,
-            'uuid' => $this->uuid,
-            'name' => $this->name ?? "Processing",
-            'size' => ceil($this->size) . " MB",
-            'pages' => $this->pages ?? "Processing",
-            'status' => $this->status,
-            'created_at' => $this->created_at->format('d M, Y'),
+        $file = $this->resource;
+
+        return [
+            'id' => $file->id,
+            'uuid' => $file->uuid,
+            'name' => $file->name ?? 'Processing',
+            'size' => ceil($file->size).' MB',
+            'pages' => $file->pages ?? 'Processing',
+            'status' => $file->status,
+            'created_at' => $file->created_at->format('d M, Y'),
         ];
     }
 }

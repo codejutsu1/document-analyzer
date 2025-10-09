@@ -40,20 +40,20 @@ class QueryRequest extends Request implements HasBody
     {
         $must = [];
 
-        if (!empty($this->qdrantPayload->doc_id)) {
+        if (! empty($this->qdrantPayload->doc_id)) {
             $must[] = [
                 'key' => 'doc_id',
-                'match' => ['value' => $this->qdrantPayload->doc_id]
+                'match' => ['value' => $this->qdrantPayload->doc_id],
             ];
         }
 
-       $body = [
+        $body = [
             'vector' => $this->qdrantPayload->vector,
             'limit' => $this->qdrantPayload->limit,
             'with_payload' => true,
         ];
 
-        if (!empty($must)) {
+        if (! empty($must)) {
             $body['filter'] = [
                 'must' => $must,
             ];

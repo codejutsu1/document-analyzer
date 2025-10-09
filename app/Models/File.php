@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Enums\FileType;
 use App\Enums\FileStatus;
+use App\Enums\FileType;
 use App\Traits\HasUuidColumn;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class File extends Model
 {
@@ -16,7 +16,7 @@ class File extends Model
     protected $fillable = [
         'user_id',
         'path',
-        'name', 
+        'name',
         'size',
         'author',
         'pages',

@@ -14,12 +14,14 @@ class MessageResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $message = $this->resource;
+
         return [
-            'id' => $this->id,
-            'uuid' => $this->uuid,
-            'participant' => $this->participant,
-            'message' => $this->message,
-            'created_at' => $this->created_at->format('d M, Y'),
+            'id' => $message->id,
+            'uuid' => $message->uuid,
+            'participant' => $message->participant,
+            'message' => $message->message,
+            'created_at' => $message->created_at->format('d M, Y'),
         ];
     }
 }

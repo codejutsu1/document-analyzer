@@ -14,11 +14,13 @@ class ConversationResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $conversation = $this->resource;
+
         return [
-            'id' => $this->id,
-            'uuid' => $this->uuid,
-            'message' => $this->getMessages($this->messages->first()->message),
-            'created_at' => $this->created_at->format('d M, Y'),
+            'id' => $conversation->id,
+            'uuid' => $conversation->uuid,
+            'message' => $conversation->getMessages($conversation->messages->first()->message),
+            'created_at' => $conversation->created_at->format('d M, Y'),
         ];
     }
 
@@ -27,7 +29,6 @@ class ConversationResource extends JsonResource
         $words = explode(' ', $text);
         $first = array_slice($words, 0, $limit);
 
-        return implode(' ', $first) . '...';
+        return implode(' ', $first).'...';
     }
 }
-

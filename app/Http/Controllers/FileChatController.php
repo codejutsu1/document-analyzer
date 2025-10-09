@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\Chat\ConversationResource;
+use App\Http\Resources\File\FileShowResource;
 use App\Models\File;
-use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\File\FileShowResource;
-use App\Http\Resources\Chat\ConversationResource;
+use Inertia\Inertia;
 
 class FileChatController extends Controller
 {

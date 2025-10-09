@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Traits\HasUuidColumn;
 use App\Enums\MessageParticipant;
+use App\Traits\HasUuidColumn;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

@@ -2,8 +2,6 @@
 
 namespace App\Services\File;
 
-use App\Models\File;
-
 class FileService
 {
     /**
@@ -13,9 +11,9 @@ class FileService
     {
         //
     }
-    
-    public function saveFile( $file)
+
+    public function saveFile($file)
     {
-       //
+        //
     }
 }

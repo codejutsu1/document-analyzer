@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\FileStatus;
+use App\Http\Resources\File\FileIndexResource;
+use App\Http\Resources\File\FileShowResource;
+use App\Jobs\ProcessFileJob;
 use App\Models\File;
 use App\Models\User;
-use Inertia\Inertia;
-use App\Enums\FileStatus;
-use Illuminate\Support\Str;
-use App\Jobs\ProcessFileJob;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
-use App\Http\Resources\File\FileShowResource;
-use App\Http\Resources\File\FileIndexResource;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class FileController extends Controller
 {
@@ -42,8 +42,7 @@ class FileController extends Controller
      */
     public function store(
         Request $request,
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $request->validate(
             [
                 'file' => 'required|file|mimes:pdf|max:10240',
@@ -65,20 +64,20 @@ class FileController extends Controller
 
                 $userFolder = "files/user_{$user->id}";
                 $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $extension    = $file->getClientOriginalExtension();
-                
-                $cleanName = Str::slug($originalName, '_') . '.' . $extension;                
+                $extension = $file->getClientOriginalExtension();
+
+                $cleanName = Str::slug($originalName, '_').'.'.$extension;
 
                 $path = $file->storeAs($userFolder, $cleanName, 'public');
 
-               $fileModel = $user->files()->create([
-                'path' => $path,
-                'size' => round(($file->getSize() / 1024) / 1024, 2),
-                'status' => FileStatus::PROCESSING,
-               ]);
+                /** @var File $fileModel */
+                $fileModel = $user->files()->create([
+                    'path' => $path,
+                    'size' => round(($file->getSize() / 1024) / 1024, 2),
+                    'status' => FileStatus::PROCESSING,
+                ]);
 
-
-               ProcessFileJob::dispatch($fileModel);
+                ProcessFileJob::dispatch($fileModel);
             });
 
             return redirect()->back()->with('success', 'File uploaded successfully');
@@ -86,7 +85,7 @@ class FileController extends Controller
             report($th);
 
             return redirect()->back()->withErrors(['message' => 'File upload failed']);
-        }     
+        }
     }
 
     /**

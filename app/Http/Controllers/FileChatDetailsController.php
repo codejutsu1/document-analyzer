@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\File;
-use Inertia\Inertia;
-use App\Models\Conversation;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\Chat\ConversationResource;
 use App\Http\Resources\Chat\MessageResource;
 use App\Http\Resources\File\FileShowResource;
-use App\Http\Resources\Chat\ConversationResource;
+use App\Models\Conversation;
+use App\Models\File;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class FileChatDetailsController extends Controller
 {
@@ -19,9 +19,9 @@ class FileChatDetailsController extends Controller
     public function __invoke(Request $request, File $file, $conversationUuid)
     {
         $conversation = Conversation::with('messages')
-                                    ->firstWhere('uuid', $conversationUuid);
+            ->firstWhere('uuid', $conversationUuid);
 
-        /** @var \App\Models\User $user */                            
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         return Inertia::render('ChatDetails', [

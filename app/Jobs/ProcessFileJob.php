@@ -2,14 +2,12 @@
 
 namespace App\Jobs;
 
-use App\Models\File;
 use App\Enums\FileStatus;
-use Smalot\PdfParser\Parser;
-use App\Events\FilesStatusUpdated;
 use App\Events\FileDetailsUpdated;
-use Illuminate\Support\Facades\Storage;
+use App\Models\File;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Storage;
+use Smalot\PdfParser\Parser;
 
 class ProcessFileJob
 {
@@ -20,14 +18,14 @@ class ProcessFileJob
      */
     public function __construct(
         protected File $file,
-    ){ }
+    ) {}
 
     /**
      * Execute the job.
      */
     public function handle(): void
     {
-        $parser = new Parser();
+        $parser = new Parser;
 
         $pdf = $parser->parseFile(
             Storage::disk('public')->path($this->file->path)

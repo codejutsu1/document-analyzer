@@ -3,13 +3,11 @@
 namespace App\Events;
 
 use App\Models\File;
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 class FilesStatusUpdated implements ShouldBroadcast
 {
@@ -31,7 +29,7 @@ class FilesStatusUpdated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('file-status.' . $this->file->id),
+            new PrivateChannel('file-status.'.$this->file->id),
         ];
     }
 
@@ -40,9 +38,10 @@ class FilesStatusUpdated implements ShouldBroadcast
         $progress = 0;
 
         if ($this->file->total_chunks > 0) {
+            /* @phpstan-ignore-next-line */
             $progress = round(($this->file->processed_chunks / $this->file->total_chunks) * 100);
         }
-    
+
         return [
             'uuid' => $this->file->uuid,
             'processed' => $this->file->processed_chunks,

@@ -14,19 +14,21 @@ class FileShowResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $file = $this->resource;
+
         return [
-            'id' => $this->id,
-            'uuid' => $this->uuid,
-            'name' => $this->name,
-            'size' => $this->size,
-            'author' => $this->author,
-            'pages' => $this->pages,
-            'status' => $this->status,
-            'progress' => $this->total_chunks > 0 
-                                ? round(($this->processed_chunks / $this->total_chunks) * 100)
+            'id' => $file->id,
+            'uuid' => $file->uuid,
+            'name' => $file->name,
+            'size' => $file->size,
+            'author' => $file->author,
+            'pages' => $file->pages,
+            'status' => $file->status,
+            'progress' => $file->total_chunks > 0
+                                ? round(($file->processed_chunks / $file->total_chunks) * 100)
                                 : 0,
-            'created_at' => $this->created_at->format('d M, Y'),
-            'type' => strtoUpper($this->type->value),
+            'created_at' => $file->created_at->format('d M, Y'),
+            'type' => strtoupper($file->type->value),
         ];
     }
 }

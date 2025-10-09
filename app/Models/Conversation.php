@@ -4,13 +4,13 @@ namespace App\Models;
 
 use App\Traits\HasUuidColumn;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Conversation extends Model
 {
     use HasUuidColumn;
-    
+
     protected $fillable = [
         'user_id',
         'file_id',
@@ -20,7 +20,6 @@ class Conversation extends Model
     {
         return 'uuid';
     }
-
 
     public function user(): BelongsTo
     {

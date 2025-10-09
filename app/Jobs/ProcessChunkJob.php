@@ -2,24 +2,25 @@
 
 namespace App\Jobs;
 
-use App\Facades\Llm;
-use App\Models\File;
 use App\Enums\FileStatus;
 use App\Events\FileProgressUpdated;
-use Illuminate\Support\Str;
-use App\Facades\VectorDatabase;
 use App\Events\FilesStatusUpdated;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\Middleware\RateLimited;
+use App\Facades\Llm;
+use App\Facades\VectorDatabase;
+use App\Models\File;
 use App\Services\VectorDatabase\Data\QdrantUpsertPayload;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Middleware\RateLimited;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ProcessChunkJob implements ShouldQueue
 {
     use Queueable;
 
     public $tries = 3;
+
     public $backoff = 10;
 
     /**
@@ -68,20 +69,22 @@ class ProcessChunkJob implements ShouldQueue
 
         Log::info('Chunk '.$this->chunk['chunk_index'].' processed successfully');
 
+        /* @phpstan-ignore-next-line */
         $this->file->processed_chunks = $this->file->processed_chunks + 1;
         $this->file->save();
 
         event(new FilesStatusUpdated($this->file));
 
-            // '595c678e-b6b3-4dac-8a51-b316cf03a50a';
+        // '595c678e-b6b3-4dac-8a51-b316cf03a50a';
     }
 
     public function failed(\Throwable $exception): void
     {
         Log::error('Chunk failed: '.$exception->getMessage());
-        
 
+        /* @phpstan-ignore-next-line */
         $this->file->status = FileStatus::FAILED;
+        /* @phpstan-ignore-next-line */
         $this->file->embedding_status = FileStatus::FAILED;
         $this->file->save();
 

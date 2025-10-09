@@ -2,15 +2,16 @@
 
 namespace App\Jobs;
 
-use App\Facades\Llm;
-use App\Models\Message;
-use App\Events\MessageCreated;
-use App\Facades\VectorDatabase;
 use App\Enums\MessageParticipant;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Events\MessageCreated;
+use App\Facades\Llm;
+use App\Facades\VectorDatabase;
+use App\Models\Conversation;
+use App\Models\Message;
 use App\Services\VectorDatabase\Data\QdrantSearchPayload;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
 
 class ProcessUserQueryJob implements ShouldQueue
 {
@@ -54,6 +55,7 @@ class ProcessUserQueryJob implements ShouldQueue
 
         Log::info('LLM Response', ['llmResponse' => $llmResponse]);
 
+        /** @var Conversation $conversation */
         $conversation = $this->message->conversation;
 
         $conversation->messages()->create([

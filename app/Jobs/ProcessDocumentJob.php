@@ -3,13 +3,11 @@
 namespace App\Jobs;
 
 use App\Models\File;
-use App\Enums\FileStatus;
 use App\Services\Pdf\PdfService;
-use App\Events\FilesStatusUpdated;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class ProcessDocumentJob implements ShouldQueue
 {
@@ -32,7 +30,7 @@ class ProcessDocumentJob implements ShouldQueue
         $chunks = $this->chuckText($pdfText, 1500, 500);
 
         $chuckCount = count($chunks);
-       
+
         $jobs = [];
 
         $chunks = array_slice($chunks, 0, 2);
@@ -44,6 +42,7 @@ class ProcessDocumentJob implements ShouldQueue
         $jobs[] = new FinalizeFileJob($this->file);
 
         // $this->file->total_chunks = $chuckCount;
+        /* @phpstan-ignore-next-line */
         $this->file->total_chunks = 2;
         $this->file->save();
 
@@ -57,6 +56,7 @@ class ProcessDocumentJob implements ShouldQueue
         int $chunkSize = 3000,
         int $overlap = 500
     ): array {
+        $chunks = [];
         $len = mb_strlen($text);
 
         $start = 0;
