@@ -20,13 +20,21 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Eye } from 'lucide-vue-next';
 import { dashboard, chat } from '@/routes';
 import { index, store, show } from '@/actions/App/Http/Controllers/FileController';
 import { type BreadcrumbItem } from '@/types';
-import { BotMessageSquare, File } from 'lucide-vue-next';
+import { BotMessageSquare, FolderCode } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Form, Head, Link } from '@inertiajs/vue3';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
@@ -98,9 +106,89 @@ const handleError = (page: any) => {
 
     <AppLayout :breadcrumbs="breadcrumbs" vaul-drawer-wrapper>
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4 border"
         >
-            <Drawer v-if="!isDesktop">
+            <Empty v-if="files?.data?.length === 0" class="border border-dashed">
+                <EmptyHeader>
+                <EmptyMedia variant="icon">
+                    <FolderCode />
+                </EmptyMedia>
+                <EmptyTitle>Files Empty</EmptyTitle>
+                <EmptyDescription>
+                    Upload files to allow AI analyze them.
+                </EmptyDescription>
+                </EmptyHeader>
+                <EmptyContent>
+                    <Dialog>
+                        <div class="flex justify-end">
+                            <DialogTrigger as-child>
+                                <Button class="cursor-pointer">Upload File</Button>
+                            </DialogTrigger>
+                        </div>
+                        <DialogContent class="sm:max-w-[425px]">
+                            <div class="mx-auto w-full max-w-sm">
+                                <Form 
+                                    :action="store.url()"
+                                    method="post"
+                                    disableWhileProcessing
+                                    @success="handleSuccess"
+                                    @error="handleError"
+                                    resetOnSuccess
+                                    #default="{
+                                        processing,
+                                        errors,
+                                        reset
+                                    }"
+                                >
+                                    <DialogHeader>
+                                        <DialogTitle>Upload PDF File</DialogTitle>
+                                        <DialogDescription><span class="text-sm text-gray-300 font-medium">Select a PDF file to upload for AI analysis</span></DialogDescription>
+                                    </DialogHeader>
+                                    <div class="py-4 pb-0">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <div class="grid w-full max-w-sm items-center gap-1.5">
+                                                <label
+                                                    for="file-upload"
+                                                    class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition"
+                                                >
+                                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                                    <svg
+                                                        class="w-10 h-10 mb-3 text-gray-400"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                                        ></path>
+                                                    </svg>
+                                                    <p class="mb-2 text-sm text-gray-500">
+                                                        <span class="font-semibold">Click to upload</span>
+                                                    </p>
+                                                    <p class="text-xs text-gray-400">PDF up to 10MB</p>
+                                                    </div>
+                                                    <input id="file-upload" name="file" type="file" class="hidden" accept="application/pdf" @change="handleFileChange" />
+                                                </label>
+                                                <p class="italic text-gray-300 text-sm">{{ filename  }}</p>
+                                                <p class="italic text-red-500 text-sm">{{ errors.file }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <DialogFooter class="flex justify-end">
+                                        <Button type="submit" :disabled="processing" class="cursor-pointer">Submit</Button>
+                                    </DialogFooter>
+                                </Form>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                </EmptyContent>
+            </Empty>
+
+            <Drawer v-if="!isDesktop && files?.data?.length > 0">
                 <div class="flex justify-end">
                     <DrawerTrigger as-child >
                         <Button class="cursor-pointer">Upload File</Button>
@@ -172,7 +260,7 @@ const handleError = (page: any) => {
                 </DrawerContent>       
             </Drawer>
 
-            <Dialog v-if="isDesktop">
+            <Dialog v-if="isDesktop && files?.data?.length > 0">
                 <div class="flex justify-end">
                     <DialogTrigger as-child>
                         <Button class="cursor-pointer">Upload File</Button>
