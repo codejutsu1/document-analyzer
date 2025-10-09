@@ -8,6 +8,9 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
@@ -36,11 +39,12 @@ import { index, store, show } from '@/actions/App/Http/Controllers/FileControlle
 import { type BreadcrumbItem } from '@/types';
 import { BotMessageSquare, FolderCode } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
-import { Form, Head, Link } from '@inertiajs/vue3';
+import { Form, Head, Link, router } from '@inertiajs/vue3';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 import { usePage } from '@inertiajs/vue3';
 import DialogHeader from "@/components/ui/dialog/DialogHeader.vue";
+import { Spinner } from "@/components/ui/spinner"
 
 const page = usePage();
 
@@ -79,12 +83,11 @@ const removeFile = () => {
 
 const handleSuccess = (page: any) => {
     if(page?.props?.flash?.message) {
-        toast.success("Success",  {
-            description: page?.props?.flash?.message,
-        });
+        // toast.success("Success",  {
+        //     description: page?.props?.flash?.message,
+        // });
 
-        filename.value = null;
-        file.value = null;
+        router.visit(show.url(page?.props?.flash?.data?.file_uuid));
     }
 };
 
@@ -94,8 +97,7 @@ const handleError = (page: any) => {
             description: page?.message,
         });
 
-        filename.value = null;
-        file.value = null;
+        removeFile();
     } 
 };
 </script>
@@ -343,7 +345,9 @@ const handleError = (page: any) => {
                                     <p class="text-xs text-gray-500">{{ file.pages  }} Pages</p>
                                     <p class="text-xs text-gray-500">{{ file.created_at  }} - ({{  file.size }})</p>
                                 </div>
-                                <Badge v-if="file.status === 'processing'" variant="outline" class="bg-yellow-500 mt-2"><Loader2 class="w-10 h-10 animate-spin"></Loader2>Processing</Badge>
+                                <Badge v-if="file.status === 'processing'" variant="secondary">
+                                    <Spinner class="size-4" />Processing
+                                </Badge>
                                 <Badge v-else-if="file.status === 'completed'" variant="outline" class="bg-green-500 mt-2">Completed</Badge>
                                 <Badge v-else-if="file.status === 'failed'" variant="outline" class="bg-red-500 mt-2">Failed</Badge>
                             </div>

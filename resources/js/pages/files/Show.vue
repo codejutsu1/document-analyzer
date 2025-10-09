@@ -4,13 +4,24 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge'
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
+import { Spinner } from "@/components/ui/spinner"
+import { Progress } from "@/components/ui/progress";
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes';
+import { dashboard, chat } from '@/routes';
 import { index, show } from '@/actions/App/Http/Controllers/FileController';
 import { type BreadcrumbItem } from '@/types';
-import { Check, Circle, Dot, Loader2 } from 'lucide-vue-next';
+import { BotMessageSquare } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
 import files from '@/routes/files';
 
@@ -84,8 +95,8 @@ const steps = [
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
-                <Card>
-                    <CardContent>
+                <Card class="border-none">
+                    <CardContent class="border py-4 rounded-md">
                        <div class="flex gap-x-1 gap-y-2">
                            <div class="flex w-1/5">
                                <img src="/pdf-image.png" alt="Image of Pdf" class="w-20 h-20">
@@ -121,7 +132,11 @@ const steps = [
                                     <div class="flex items-center">
                                         <span v-if="fileStatus === 'completed'" class="font-medium w-4/5"><Badge variant="outline" class="bg-green-500">Completed</Badge></span>
                                         <span v-if="fileStatus === 'failed'" class="font-medium w-4/5"><Badge variant="outline" class="bg-red-500">Failed</Badge></span>
-                                        <span v-if="fileStatus === 'processing'" class="font-medium w-4/5"><Badge variant="outline" class="bg-yellow-500"><Loader2 class="w-10 h-10 animate-spin"></Loader2>Processing</Badge></span>
+                                        <span v-if="fileStatus === 'processing'" class="font-medium w-4/5">
+                                            <Badge variant="secondary">
+                                                <Spinner class="size-4" />Processing
+                                            </Badge>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -133,35 +148,53 @@ const steps = [
                     <div class="max-w-3xl mx-auto p-6">
                         <div class="flex items-center justify-between mb-4">
                             <div>
-                            <h3 class="text-lg font-semibold">Processing status</h3>
-                            <p class="text-sm text-gray-500">Background pipeline progress and logs</p>
+                            <h3 class="text-lg font-semibold">Status</h3>
+                            <!-- <p class="text-sm text-gray-500">Background pipeline progress and logs</p> -->
                             </div>
                         </div>
-
-                        <!-- Progress bar -->
-                        <div class="relative h-3 rounded-full bg-gray-200 overflow-hidden">
-                            <!-- filled portion -->
-                            <div class="absolute left-0 top-0 h-full bg-blue-500 rounded-full transition-all duration-500 ease-out" :class="progressPercentage === 100 ? 'bg-green-500' : 'bg-blue-500'" :style="{ width: progressPercentage + '%' }"></div>
-                        </div>
                         
-                        <div class="mt-2 mb-6">
-                            <span class="text-sm text-gray-200 font-medium">{{ progressPercentage }}/100</span>
+
+                        <div class="flex w-full max-w-md flex-col gap-4 [--radius:1rem] mb-4">
+                            <Item variant="outline">
+                            <ItemMedia v-if="progressPercentage !== 100" variant="icon">
+                                <Spinner />
+                            </ItemMedia>
+                            <ItemContent>
+                                <ItemTitle v-if="progressPercentage !== 100">
+                                    Processing Document...
+                                </ItemTitle>
+                                <ItemTitle v-else>Completed</ItemTitle>
+                                <ItemDescription>{{ progressPercentage }}%</ItemDescription>
+                            </ItemContent>
+                            <ItemFooter>
+                                <Progress class="text-green-500" :model-value="progressPercentage" />
+                            </ItemFooter>
+                            </Item>
+                        </div>
+
+                        <div v-if="progressPercentage === 100" class="w-full pt-4">
+                            <Button class="w-full">
+                                <Link
+                                    :href="chat.url(file?.data?.uuid)"
+                                    class="w-full"
+                                >
+                                    <Button class="w-full cursor-pointer">
+                                        <BotMessageSquare class="mr-2 h-4 w-4" /> Chat AI Assistant
+                                    </Button>
+                                </Link>
+                            </Button>
                         </div>
                         
 
                         <!-- Details / timeline -->
-                        <div class="space-y-3 shadow-sm divide-y">
+                        <!-- <div class="space-y-3 shadow-sm divide-y">
                             <Card v-for="step in steps" :key="step.step">
                                 <CardContent>
                                     <div class="flex gap-4 items-start">
-                                        <!-- <div v-if="step.status.value === 'completed'" class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-medium">✓</div> -->
-                                        <!-- <div v-if="step.status.value === 'active'" class="w-8 h-8 rounded-full border-2 border-blue-600 bg-white text-blue-600 flex items-center justify-center text-sm font-medium animate-pulse">●</div> -->
                                         <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-sm font-medium">{{ step.step }}</div>
                                         <div class="flex-1">
                                             <div class="flex items-center justify-between">
-                                            <div>
-                                                <!-- :class="step.status.value === 'completed' ? 'text-green-600' : (step.status.value === 'active' ? 'text-blue-600 animate-pulse' : 'text-gray-600')" -->
-                                                <div 
+                                            <div> <div 
                                                     class="text-sm font-semibold text-gray-600"
                                                 >{{ step.title }}</div>
                                                 <div class="text-xs text-gray-500">{{ step.description }}</div>
@@ -171,7 +204,8 @@ const steps = [
                                     </div>
                                 </CardContent>
                             </Card>
-                        </div>
+                        </div> -->
+
                     </div>
                 </div>
             </div>

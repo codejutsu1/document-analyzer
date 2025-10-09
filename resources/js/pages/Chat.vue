@@ -50,8 +50,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const handleError = () => {
-    console.log('handleError');
-    console.log(page);
     if(page?.props?.flash?.message) {
         toast.error("Error", {
             description: page?.message,
@@ -60,15 +58,10 @@ const handleError = () => {
 }
 
 const handleSuccess = () => {
-    console.log(page.props.flash);
-    console.log('handleSuccess');
-    console.log(props.file.data.uuid);
-    console.log(page?.props?.flash?.data?.conversation_uuid);
     router.visit(chatDetails.url({
-  file: props.file.data.uuid,
-  conversation: page?.props?.flash?.data?.conversation_uuid
-}));
-    console.log(true);
+        file: props.file.data.uuid,
+        conversation: page?.props?.flash?.data?.conversation_uuid
+    }));
 }
 </script>
 

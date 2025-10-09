@@ -58,7 +58,7 @@ class FileController extends Controller
         $file = $request->file('file');
 
         try {
-            DB::transaction(function () use ($file) {
+            $fileModel = DB::transaction(function () use ($file) {
                 /** @var User $user */
                 $user = Auth::user();
 
@@ -78,9 +78,16 @@ class FileController extends Controller
                 ]);
 
                 ProcessFileJob::dispatch($fileModel);
+
+                return $fileModel;
             });
 
-            return redirect()->back()->with('success', 'File uploaded successfully');
+            return redirect()->back()->with([
+                'success' => 'File uploaded successfully',
+                'data' => [
+                    'file_uuid' => $fileModel->uuid,
+                ],
+            ]);
         } catch (\Throwable $th) {
             report($th);
 
@@ -93,7 +100,7 @@ class FileController extends Controller
      */
     public function show(File $file)
     {
-        return Inertia::render('Show', [
+        return Inertia::render('files/Show', [
             'file' => fn () => new FileShowResource($file),
         ]);
     }
