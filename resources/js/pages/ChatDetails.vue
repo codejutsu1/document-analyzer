@@ -44,6 +44,8 @@ if(props.messages.data.length > 0 && props.messages.data[props.messages.data.len
     disabledButton.value = true;
 }
 
+const isReady = ref(false);
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -62,11 +64,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 const scrollToBottom = async () => {
     await nextTick();
     chatContainerRef.value?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    isReady.value = true;
+    console.log('isready');
 }
 
 const handleSuccess = () => {
-    console.log('success');
-    disabledButton.value = true;
     scrollToBottom();
 }
 
@@ -82,13 +84,15 @@ onMounted(() => {
             disabledButton.value = false;
             props.messages.data.push(e.message);
             await nextTick();
-            scrollToBottom();
+                scrollToBottom();
         });
 });
 
 
-onMounted(() => {
-    scrollToBottom();
+onMounted(async () => {
+    isReady.value = false;
+    console.log('mounted' + isReady.value);
+    await scrollToBottom();
 });
 
 </script>
@@ -105,7 +109,7 @@ onMounted(() => {
                 <div class="w-[70%] h-full">
                     <div class="h-full">
                         <div class="relative h-full flex flex-col items-center justify-between">
-                            <ScrollArea ref="scrollAreaRef" class="w-full rounded-md h-[400px] p-2 mb-2">
+                            <ScrollArea v-show="isReady" ref="scrollAreaRef" class="w-full rounded-md h-[400px] p-2 mb-2">
                                 <div class="space-y-2">
                                     <div 
                                         v-for="message in messages.data" 

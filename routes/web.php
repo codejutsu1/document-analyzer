@@ -22,7 +22,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
-    Route::resource('files', FileController::class);
+    Route::resource('files', FileController::class)->only(['index', 'show', 'store']);
 
     Route::get('files/{file}/chats', FileChatController::class)->name('chat');
     Route::post('/files/{file:uuid}/chats/{conversation:uuid?}', FileChatStoreController::class)->name('chat.store');

@@ -24,7 +24,7 @@ class FileController extends Controller
     {
         $files = File::whereBelongsTo(Auth::user())->get();
 
-        return Inertia::render('File', [
+        return Inertia::render('files/Index', [
             'files' => fn () => FileIndexResource::collection($files),
         ]);
     }

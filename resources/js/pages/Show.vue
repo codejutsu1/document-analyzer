@@ -3,14 +3,6 @@ import {
   Card,
   CardContent,
 } from '@/components/ui/card';
-import { 
-    Stepper, 
-    StepperDescription, 
-    StepperItem, 
-    StepperSeparator, 
-    StepperTitle, 
-    StepperTrigger 
-} from "@/components/ui/stepper";
 import { Badge } from '@/components/ui/badge'
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';

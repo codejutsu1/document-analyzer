@@ -1,12 +1,15 @@
 <script setup lang="ts">
+import { useMediaQuery } from "@vueuse/core"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerClose,
@@ -29,6 +32,7 @@ import { Form, Head, Link } from '@inertiajs/vue3';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 import { usePage } from '@inertiajs/vue3';
+import DialogHeader from "@/components/ui/dialog/DialogHeader.vue";
 
 const page = usePage();
 
@@ -46,6 +50,8 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: index.url(),
     },
 ];
+
+const isDesktop = useMediaQuery("(min-width: 768px)")
 
 const file = ref<File | null>(null);
 const filename = ref<string | null>(null);
@@ -94,9 +100,9 @@ const handleError = (page: any) => {
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
-            <Drawer>
+            <Drawer v-if="!isDesktop">
                 <div class="flex justify-end">
-                    <DrawerTrigger as-child class="border">
+                    <DrawerTrigger as-child >
                         <Button class="cursor-pointer">Upload File</Button>
                     </DrawerTrigger>
                 </div>
@@ -165,6 +171,74 @@ const handleError = (page: any) => {
                     </div>
                 </DrawerContent>       
             </Drawer>
+
+            <Dialog v-if="isDesktop">
+                <div class="flex justify-end">
+                    <DialogTrigger as-child>
+                        <Button class="cursor-pointer">Upload File</Button>
+                    </DialogTrigger>
+                </div>
+                <DialogContent class="sm:max-w-[425px]">
+                    <div class="mx-auto w-full max-w-sm">
+                        <Form 
+                            :action="store.url()"
+                            method="post"
+                            disableWhileProcessing
+                            @success="handleSuccess"
+                            @error="handleError"
+                            resetOnSuccess
+                            #default="{
+                                processing,
+                                errors,
+                                reset
+                            }"
+                        >
+                            <DialogHeader>
+                                <DialogTitle>Upload PDF File</DialogTitle>
+                                <DialogDescription><span class="text-sm text-gray-300 font-medium">Select a PDF file to upload for AI analysis</span></DialogDescription>
+                            </DialogHeader>
+                            <div class="py-4 pb-0">
+                                <div class="flex items-center justify-center space-x-2">
+                                    <div class="grid w-full max-w-sm items-center gap-1.5">
+                                        <label
+                                            for="file-upload"
+                                            class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition"
+                                        >
+                                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <svg
+                                                class="w-10 h-10 mb-3 text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                                ></path>
+                                            </svg>
+                                            <p class="mb-2 text-sm text-gray-500">
+                                                <span class="font-semibold">Click to upload</span>
+                                            </p>
+                                            <p class="text-xs text-gray-400">PDF up to 10MB</p>
+                                            </div>
+                                            <input id="file-upload" name="file" type="file" class="hidden" accept="application/pdf" @change="handleFileChange" />
+                                        </label>
+                                        <p class="italic text-gray-300 text-sm">{{ filename  }}</p>
+                                        <p class="italic text-red-500 text-sm">{{ errors.file }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <DialogFooter class="flex justify-end">
+                                <Button type="submit" :disabled="processing" class="cursor-pointer">Submit</Button>
+                            </DialogFooter>
+                        </Form>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
                 <Card v-for="file in files?.data" :key="file.id" class="flex flex-col justify-between">
                     <CardContent class="h-full">
