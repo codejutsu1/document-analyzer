@@ -9,6 +9,7 @@ use App\Facades\Llm;
 use App\Facades\VectorDatabase;
 use App\Models\File;
 use App\Services\VectorDatabase\Data\QdrantUpsertPayload;
+use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\RateLimited;
@@ -17,7 +18,7 @@ use Illuminate\Support\Str;
 
 class ProcessChunkJob implements ShouldQueue
 {
-    use Queueable;
+    use Batchable, Queueable;
 
     public $tries = 3;
 
@@ -28,7 +29,7 @@ class ProcessChunkJob implements ShouldQueue
      */
     public function __construct(
         public array $chunk,
-        public File $file
+        public int $fileId,
     ) {}
 
     public function middleware(): array
@@ -43,6 +44,8 @@ class ProcessChunkJob implements ShouldQueue
      */
     public function handle(): void
     {
+        $file = File::findOrFail($this->fileId);
+
         $embedding = Llm::embed($this->chunk['text']);
 
         $uuid = Str::uuid();
@@ -52,7 +55,7 @@ class ProcessChunkJob implements ShouldQueue
             'id' => $uuid,
             'vector' => $embedding,
             'payload' => [
-                'doc_id' => $this->file->path,
+                'doc_id' => $file->path,
                 'page' => $this->chunk['page'] ?? null,
                 'chunk_index' => $this->chunk['chunk_index'],
                 'text' => $this->chunk['text'],
@@ -69,26 +72,26 @@ class ProcessChunkJob implements ShouldQueue
 
         Log::info('Chunk '.$this->chunk['chunk_index'].' processed successfully');
 
-        /* @phpstan-ignore-next-line */
-        $this->file->processed_chunks = $this->file->processed_chunks + 1;
-        $this->file->save();
+        $file->increment('processed_chunks');
 
-        event(new FilesStatusUpdated($this->file));
+        event(new FilesStatusUpdated($file));
 
         // '595c678e-b6b3-4dac-8a51-b316cf03a50a';
     }
 
     public function failed(\Throwable $exception): void
     {
+        $file = File::findOrFail($this->fileId);
+
         Log::error('Chunk failed: '.$exception->getMessage());
 
         /* @phpstan-ignore-next-line */
-        $this->file->status = FileStatus::FAILED;
+        $file->status = FileStatus::FAILED;
         /* @phpstan-ignore-next-line */
-        $this->file->embedding_status = FileStatus::FAILED;
-        $this->file->save();
+        $file->embedding_status = FileStatus::FAILED;
+        $file->save();
 
-        event(new FileProgressUpdated($this->file));
+        event(new FileProgressUpdated($file));
 
         $this->release(10);
     }

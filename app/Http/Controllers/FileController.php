@@ -77,7 +77,7 @@ class FileController extends Controller
                     'status' => FileStatus::PROCESSING,
                 ]);
 
-                ProcessFileJob::dispatch($fileModel);
+                ProcessFileJob::dispatch($fileModel->id);
 
                 return $fileModel;
             });

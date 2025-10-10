@@ -15,7 +15,7 @@ class FinalizeFileJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public File $file)
+    public function __construct(public int $fileId)
     {
         //
     }
@@ -25,18 +25,20 @@ class FinalizeFileJob implements ShouldQueue
      */
     public function handle(): void
     {
-        if ($this->file->processed_chunks > $this->file->total_chunks) {
-            $this->file->processed_chunks = $this->file->total_chunks;
-            $this->file->save();
-            $this->file->refresh();
+        $file = File::findOrFail($this->fileId);
+
+        if ($file->processed_chunks > $file->total_chunks) {
+            $file->processed_chunks = $file->total_chunks;
+            $file->save();
+            $file->refresh();
         }
 
-        if ($this->file->processed_chunks == $this->file->total_chunks) {
+        if ($file->processed_chunks == $file->total_chunks) {
             /* @phpstan-ignore-next-line */
-            $this->file->status = FileStatus::COMPLETED;
-            $this->file->save();
+            $file->status = FileStatus::COMPLETED;
+            $file->save();
 
-            event(new FilesStatusUpdated($this->file));
+            event(new FilesStatusUpdated($file));
         }
     }
 }

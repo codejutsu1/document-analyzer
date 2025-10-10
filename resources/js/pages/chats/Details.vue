@@ -155,7 +155,7 @@ onMounted(async () => {
                                     <InputGroupAddon align="block-end" class="flex justify-end">
                                         <InputGroupButton
                                             variant="default"
-                                            class="rounded-full"
+                                            class="rounded-full cursor-pointer"
                                             size="icon-sm"
                                             type="submit"
                                             :disabled="processing || disabledButton"

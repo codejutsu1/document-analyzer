@@ -17,7 +17,7 @@ class ProcessFileJob
      * Create a new job instance.
      */
     public function __construct(
-        protected File $file,
+        protected int $fileId,
     ) {}
 
     /**
@@ -25,10 +25,12 @@ class ProcessFileJob
      */
     public function handle(): void
     {
+        $file = File::findOrFail($this->fileId);
+
         $parser = new Parser;
 
         $pdf = $parser->parseFile(
-            Storage::disk('public')->path($this->file->path)
+            Storage::disk('public')->path($file->path)
         );
 
         $pages = $pdf->getPages();
@@ -39,7 +41,7 @@ class ProcessFileJob
         $author = $details['Author'] ?? null;
         $title = $details['Title'] ?? null;
 
-        $this->file->update([
+        $file->update([
             'name' => $title,
             'author' => $author,
             'pages' => $pagesCount,
@@ -47,6 +49,6 @@ class ProcessFileJob
         ]);
 
         // event(new FileDetailsUpdated($this->file));
-        ProcessDocumentJob::dispatch($this->file);
+        ProcessDocumentJob::dispatch($file->id);
     }
 }
