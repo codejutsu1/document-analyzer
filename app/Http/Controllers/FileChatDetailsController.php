@@ -24,7 +24,7 @@ class FileChatDetailsController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        return Inertia::render('ChatDetails', [
+        return Inertia::render('chats/Details', [
             'messages' => fn () => MessageResource::collection($conversation->messages),
             'file' => fn () => new FileShowResource($file),
             'conversation' => fn () => new ConversationResource($conversation),

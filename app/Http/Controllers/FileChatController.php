@@ -21,7 +21,7 @@ class FileChatController extends Controller
 
         $user->load('conversations.messages');
 
-        return Inertia::render('Chat', [
+        return Inertia::render('chats/Index', [
             'conversations' => fn () => ConversationResource::collection($user->conversations),
             'file' => fn () => new FileShowResource($file),
         ]);

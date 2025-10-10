@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from '@/components/ui/card';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+  InputGroupText,
+  InputGroupTextarea,
+} from '@/components/ui/input-group';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +25,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Check, Circle, Dot } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Head, Form, usePage, router, Link } from '@inertiajs/vue3';
-import { Ellipsis, Trash } from "lucide-vue-next";
+import { Ellipsis, Trash, ArrowUpIcon } from "lucide-vue-next";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import store from '@/actions/App/Http/Controllers/FileChatStoreController';
 import chatDetails from '@/actions/App/Http/Controllers/FileChatDetailsController';
@@ -92,8 +96,23 @@ const handleSuccess = () => {
                         >
                             <div class="flex flex-col border space-y-4 w-full h-full items-center justify-center">
                                 <p class="text-lg font-medium">Hello, whats the agenda today?</p>
+                                <InputGroup class="w-11/12 rounded-3xl">
+                                    <InputGroupTextarea name="message" placeholder="Ask, Search or Chat..." autofocus="true" required />
+                                    <InputGroupAddon align="block-end" class="flex justify-end">
+                                        <InputGroupButton
+                                            variant="default"
+                                            class="rounded-full"
+                                            size="icon-sm"
+                                            type="submit"
+                                            :disabled="processing" 
+                                        >
+                                            <ArrowUpIcon class="size-5" />
+                                            <span class="sr-only">Send</span>
+                                        </InputGroupButton>
+                                    </InputGroupAddon>
+                                </InputGroup>
                                 <!-- Chat input box -->
-                                <div class="relative w-4/5">
+                                <!-- <div class="relative w-4/5">
                                     <textarea
                                         rows="2"
                                         name="message"
@@ -120,7 +139,7 @@ const handleSuccess = () => {
                                         />
                                     </svg>
                                 </Button>
-                                </div>
+                                </div> -->
                             </div>
                         </Form>
                 </div>

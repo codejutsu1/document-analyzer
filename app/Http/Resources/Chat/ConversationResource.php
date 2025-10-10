@@ -19,7 +19,7 @@ class ConversationResource extends JsonResource
         return [
             'id' => $conversation->id,
             'uuid' => $conversation->uuid,
-            'message' => $conversation->getMessages($conversation->messages->first()->message),
+            'message' => $this->getMessages($conversation->messages->first()->message),
             'created_at' => $conversation->created_at->format('d M, Y'),
         ];
     }
