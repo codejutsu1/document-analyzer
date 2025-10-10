@@ -7,19 +7,23 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupTextarea,
+} from '@/components/ui/input-group';
 import { Badge } from '@/components/ui/badge'
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes';
+import { dashboard, chat } from '@/routes';
 import { show } from '@/actions/App/Http/Controllers/FileController';
 import { type BreadcrumbItem } from '@/types';
 import { Check, Circle, Dot } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Head, Form, Link } from '@inertiajs/vue3';
-import { Ellipsis, Trash } from "lucide-vue-next";
+import { Ellipsis, Trash, ArrowUpIcon } from "lucide-vue-next";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import store from '@/actions/App/Http/Controllers/FileChatStoreController';
 import chatDetails from '@/actions/App/Http/Controllers/FileChatDetailsController';
@@ -40,11 +44,13 @@ const scrollAreaRef = ref<{ $el: HTMLElement } | null>(null);
 
 const chatContainerRef = ref<{ $el: HTMLElement } | null>(null);
 
+const isTyping = ref(false);
+
 if(props.messages.data.length > 0 && props.messages.data[props.messages.data.length - 1].participant === 'user') {
     disabledButton.value = true;
 }
 
-const isReady = ref(false);
+const isReady = ref(true);
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -64,11 +70,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 const scrollToBottom = async () => {
     await nextTick();
     chatContainerRef.value?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    isReady.value = true;
-    console.log('isready');
 }
 
 const handleSuccess = () => {
+    isTyping.value = true;
     scrollToBottom();
 }
 
@@ -82,6 +87,7 @@ onMounted(() => {
     window.Echo.private(`message-created.${props.conversation.data.id}`)
         .listen('MessageCreated', async (e) => {
             disabledButton.value = false;
+            isTyping.value = false;
             props.messages.data.push(e.message);
             await nextTick();
                 scrollToBottom();
@@ -90,8 +96,6 @@ onMounted(() => {
 
 
 onMounted(async () => {
-    isReady.value = false;
-    console.log('mounted' + isReady.value);
     await scrollToBottom();
 });
 
@@ -109,7 +113,7 @@ onMounted(async () => {
                 <div class="w-[70%] h-full">
                     <div class="h-full">
                         <div class="relative h-full flex flex-col items-center justify-between">
-                            <ScrollArea v-show="isReady" ref="scrollAreaRef" class="w-full rounded-md h-[400px] p-2 mb-2">
+                            <ScrollArea v-show="isReady" ref="scrollAreaRef" class="w-full rounded-md h-[350px] p-2 mb-2">
                                 <div class="space-y-2">
                                     <div 
                                         v-for="message in messages.data" 
@@ -122,6 +126,12 @@ onMounted(async () => {
                                             </p>
                                         </div>
                                     </div>
+                                    <div v-if="isTyping" class="relative flex items-center space-x-2 px-2">
+                                        <span class="flex h-3 w-3">
+                                            <span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-blue-400 opacity-75"></span>
+                                            <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                                        </span>
+                                        </div>
                                 </div>
 
                                 <div ref="chatContainerRef"></div>
@@ -140,7 +150,22 @@ onMounted(async () => {
                                     reset
                                 }"
                             >
-                                <textarea
+                                <InputGroup class="w-full rounded-3xl">
+                                    <InputGroupTextarea name="message" placeholder="Type your message..." autofocus="true" required />
+                                    <InputGroupAddon align="block-end" class="flex justify-end">
+                                        <InputGroupButton
+                                            variant="default"
+                                            class="rounded-full"
+                                            size="icon-sm"
+                                            type="submit"
+                                            :disabled="processing || disabledButton"
+                                        >
+                                            <ArrowUpIcon class="size-5" />
+                                            <span class="sr-only">Send</span>
+                                        </InputGroupButton>
+                                    </InputGroupAddon>
+                                </InputGroup>
+                                <!-- <textarea
                                     rows="2"
                                     name="message"
                                     class="scrollbar-thin scrollbar-rounded bg-zinc-900  w-full p-4 border border-gray-300 rounded-4xl resize-none focus:outline-none focus:ring-1 focus:ring-gray-500 transition-all"
@@ -166,17 +191,28 @@ onMounted(async () => {
                                         d="M17 8l4 4m0 0l-4 4m4-4H3"
                                         />
                                     </svg>
-                                </Button>
+                                </Button> -->
                             </Form>
                         </div>
                     </div>
                 </div>
                 <div class="w-1/3 h-full border rounded-lg py-4 px-2">
-                    <h1 class="text-lg font-bold text-center">Chat History</h1>
+                    <div class="flex justify-between items-center">
+                        <h1 class="text-lg font-bold text-center">Chat History</h1>
+
+                        <div>
+                            <Link
+                                :href="chat.url(file?.data.uuid)"
+                                class="w-full"
+                            >
+                                <Button class="cursor-pointer">New Chat</Button>
+                            </Link>
+                        </div>
+                    </div>
                     <ScrollArea class="h-[90%] w-full rounded-md">
                         <div class="mt-2 space-y-2">
                             <Link
-                                v-for="conversationData in conversations.data" :key="conversation.id"
+                                v-for="conversationData in conversations.data" :key="conversationData.id"
                                 :href="chatDetails.url({ file: file.data.uuid, conversation: conversationData.uuid })"
                                 class="block mt-3"
                             >

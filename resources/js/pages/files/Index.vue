@@ -33,14 +33,14 @@ import {
 } from "@/components/ui/empty";
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Eye } from 'lucide-vue-next';
+import {  Eye } from 'lucide-vue-next';
 import { dashboard, chat } from '@/routes';
 import { index, store, show } from '@/actions/App/Http/Controllers/FileController';
 import { type BreadcrumbItem } from '@/types';
 import { BotMessageSquare, FolderCode } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Form, Head, Link, router } from '@inertiajs/vue3';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 import { usePage } from '@inertiajs/vue3';
 import DialogHeader from "@/components/ui/dialog/DialogHeader.vue";

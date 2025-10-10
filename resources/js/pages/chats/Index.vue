@@ -7,8 +7,6 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
-  InputGroupInput,
-  InputGroupText,
   InputGroupTextarea,
 } from '@/components/ui/input-group';
 import {
@@ -22,8 +20,6 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { show } from '@/actions/App/Http/Controllers/FileController';
 import { type BreadcrumbItem } from '@/types';
-import { Check, Circle, Dot } from 'lucide-vue-next';
-import { Button } from '@/components/ui/button';
 import { Head, Form, usePage, router, Link } from '@inertiajs/vue3';
 import { Ellipsis, Trash, ArrowUpIcon } from "lucide-vue-next";
 import { ScrollArea } from '@/components/ui/scroll-area';
