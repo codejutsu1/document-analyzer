@@ -42,11 +42,8 @@ import { Button } from '@/components/ui/button';
 import { Form, Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { usePage } from '@inertiajs/vue3';
 import DialogHeader from "@/components/ui/dialog/DialogHeader.vue";
-import { Spinner } from "@/components/ui/spinner"
-
-const page = usePage();
+import { Spinner } from "@/components/ui/spinner";
 
 defineProps<{
     files: { data: any[] };
@@ -138,8 +135,7 @@ const handleError = (page: any) => {
                                     resetOnSuccess
                                     #default="{
                                         processing,
-                                        errors,
-                                        reset
+                                        errors
                                     }"
                                 >
                                     <DialogHeader>
@@ -208,7 +204,6 @@ const handleError = (page: any) => {
                             #default="{
                                 processing,
                                 errors,
-                                reset
                             }"
                         >
                             <DrawerHeader>
@@ -279,8 +274,7 @@ const handleError = (page: any) => {
                             resetOnSuccess
                             #default="{
                                 processing,
-                                errors,
-                                reset
+                                errors
                             }"
                         >
                             <DialogHeader>

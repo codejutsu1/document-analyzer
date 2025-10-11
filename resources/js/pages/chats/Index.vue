@@ -15,7 +15,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge'
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { show } from '@/actions/App/Http/Controllers/FileController';
@@ -84,8 +83,6 @@ const handleSuccess = () => {
                             resetOnSuccess
                             #default="{
                                 processing,
-                                errors,
-                                reset
                             }"
 
                             class="w-full h-full"

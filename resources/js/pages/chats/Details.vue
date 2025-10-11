@@ -15,19 +15,17 @@ import {
   InputGroupButton,
   InputGroupTextarea,
 } from '@/components/ui/input-group';
-import { Badge } from '@/components/ui/badge'
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard, chat } from '@/routes';
 import { show } from '@/actions/App/Http/Controllers/FileController';
 import { type BreadcrumbItem } from '@/types';
-import { Check, Circle, Dot } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Head, Form, Link } from '@inertiajs/vue3';
 import { Ellipsis, Trash, ArrowUpIcon } from "lucide-vue-next";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import store from '@/actions/App/Http/Controllers/FileChatStoreController';
 import chatDetails from '@/actions/App/Http/Controllers/FileChatDetailsController';
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, watch } from 'vue';
 
 const props = defineProps<{
     file: any;
@@ -35,8 +33,6 @@ const props = defineProps<{
     messages: any;
     conversations: any;
 }>();
-
-const emit = defineEmits(['addMessage']);
 
 const disabledButton = ref(false);
 
@@ -49,6 +45,12 @@ const isTyping = ref(false);
 if(props.messages.data.length > 0 && props.messages.data[props.messages.data.length - 1].participant === 'user') {
     disabledButton.value = true;
 }
+
+if(props.messages.data.length == 1 && props.messages.data[props.messages.data.length - 1].participant === 'user') {
+    isTyping.value = true;
+}
+
+const localMessages = ref(props.messages.data);
 
 const isReady = ref(true);
 
@@ -81,14 +83,16 @@ const handleError = () => {
     console.log('error');
 }
 
-
+const addNewMessage = (message: any) => {
+    localMessages.value.push(message);
+}
 
 onMounted(() => {
     window.Echo.private(`message-created.${props.conversation.data.id}`)
         .listen('MessageCreated', async (e) => {
             disabledButton.value = false;
             isTyping.value = false;
-            props.messages.data.push(e.message);
+            addNewMessage(e.message);
             await nextTick();
                 scrollToBottom();
         });
@@ -98,6 +102,14 @@ onMounted(() => {
 onMounted(async () => {
     await scrollToBottom();
 });
+
+watch(
+  () => props.messages.data,
+  (newMessagesData) => {
+    localMessages.value = newMessagesData;
+  },
+  { deep: true }
+);
 
 </script>
 
@@ -116,7 +128,7 @@ onMounted(async () => {
                             <ScrollArea v-show="isReady" ref="scrollAreaRef" class="w-full rounded-md h-[600px] md:h-[350px] p-2 mb-2">
                                 <div class="space-y-2">
                                     <div 
-                                        v-for="message in messages.data" 
+                                        v-for="message in localMessages" 
                                         :key="message.id" class="flex" 
                                         :class="message.participant === 'user' ? 'justify-end' : 'justify-start'"
                                     >
@@ -126,7 +138,7 @@ onMounted(async () => {
                                             </p>
                                         </div>
                                     </div>
-                                    <div v-if="isTyping" class="relative flex items-center space-x-2 px-2">
+                                    <div v-if="isTyping" class="relative flex items-center space-x-2 px-2 mb-4">
                                         <span class="flex h-3 w-3">
                                             <span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-blue-400 opacity-75"></span>
                                             <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
@@ -146,8 +158,6 @@ onMounted(async () => {
                                 class="w-full px-1"
                                 #default="{
                                     processing,
-                                    errors,
-                                    reset
                                 }"
                             >
                                 <InputGroup class="w-full rounded-3xl">

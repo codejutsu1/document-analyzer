@@ -6,7 +6,6 @@ import {
 import { Badge } from '@/components/ui/badge'
 import {
   Item,
-  ItemActions,
   ItemContent,
   ItemDescription,
   ItemFooter,
@@ -17,13 +16,12 @@ import { Spinner } from "@/components/ui/spinner"
 import { Progress } from "@/components/ui/progress";
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard, chat } from '@/routes';
-import { index, show } from '@/actions/App/Http/Controllers/FileController';
+import { index } from '@/actions/App/Http/Controllers/FileController';
 import { type BreadcrumbItem } from '@/types';
 import { BotMessageSquare } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Head, Link } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
-import files from '@/routes/files';
 
 const props = defineProps<{
     file: any;
@@ -64,25 +62,6 @@ onMounted(() => {
             fileStatus.value = e.status;
         });
 });
-
-
-const steps = [
-    {
-        step: 1,
-        title: "Chunking",
-        description: "Splitting file into chunks",
-    },
-    {
-        step: 2,
-        title: "Embeddings",
-        description: "Generating embeddings",
-    },
-    {
-        step: 3,
-        title: "Storage",
-        description: "Saving embeddings to vector storage",
-    },
-]
 
 </script>
 
