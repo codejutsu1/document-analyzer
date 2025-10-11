@@ -73,8 +73,8 @@ const handleSuccess = () => {
         <div
             class="flex h-full border flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
-           <div class="flex gap-4 h-[500px]">
-                <div class="w-[70%]  h-[90%]">
+           <div class="flex gap-4 h-[700px] md:h-[500px]">
+                <div class="md:w-[70%] w-full h-[90%]">
                         <Form 
                             :action="store.url({ file: file.data.uuid })"
                             method="post"
@@ -139,7 +139,7 @@ const handleSuccess = () => {
                             </div>
                         </Form>
                 </div>
-                <div class="w-1/3 h-[90%] border rounded-lg py-4 px-2">
+                <div class="hidden md:block w-1/3 h-[90%] border rounded-lg py-4 px-2">
                     <h1 class="text-lg font-bold text-center">Chat History</h1>
                     <ScrollArea class="h-[90%] w-full rounded-md">
                         <div class="mt-2 space-y-2">

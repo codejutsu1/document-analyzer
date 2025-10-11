@@ -98,37 +98,37 @@ const steps = [
                 <Card class="border-none">
                     <CardContent class="border py-4 rounded-md">
                        <div class="flex gap-x-1 gap-y-2">
-                           <div class="flex w-1/5">
+                           <div class="flex w-1/3 md:w-1/5">
                                <img src="/pdf-image.png" alt="Image of Pdf" class="w-20 h-20">
                            </div>
-                          <div class="flex flex-col w-4/5">
+                          <div class="flex flex-col w-3/5 md:w-4/5">
                             <div class="flex flex-col gap-2 space-y-1 text-sm">
-                                <div class="flex items-start">
-                                    <span class="text-gray-400 text-sm w-1/5">Name: </span>
+                                <div class="flex items-start text-xs md:text-sm">
+                                    <span class="text-gray-400 w-1/3 md:w-1/5">Name: </span>
                                     <span class="font-medium w-4/5">{{  file?.data?.name }}</span>
                                 </div>
-                                <div class="flex items-start">
-                                    <span class="text-gray-400 text-sm w-1/5">Size: </span>
+                                <div class="flex items-start text-xs md:text-sm">
+                                    <span class="text-gray-400 w-1/3 md:w-1/5">Size: </span>
                                     <span class="font-medium w-4/5">{{  file?.data?.size }}</span>
                                 </div>
-                                <div class="flex items-start">
-                                    <span class="text-gray-400 text-sm w-1/5">Author: </span>
+                                <div class="flex items-start text-xs md:text-sm">
+                                    <span class="text-gray-400 w-1/3 md:w-1/5">Author: </span>
                                     <span class="font-medium w-4/5">{{ file?.data?.author ?? "No Author in this PDF" }}</span>
                                 </div>
-                                <div class="flex items-start">
-                                    <span class="text-gray-400 text-sm w-1/5">Pages: </span>
+                                <div class="flex items-start text-xs md:text-sm">
+                                    <span class="text-gray-400 w-1/3 md:w-1/5">Pages: </span>
                                     <span class="font-medium w-4/5">{{ file?.data?.pages }}</span>
                                 </div>
-                                <div class="flex items-start">
-                                    <span class="text-gray-400 text-sm w-1/5">Uploaded: </span>
+                                <div class="flex items-start text-xs md:text-sm">
+                                    <span class="text-gray-400 w-1/3  md:w-1/5">Upload: </span>
                                     <span class="font-medium w-4/5">{{ file?.data?.created_at }}</span>
                                 </div>
-                                <div class="flex items-start">
-                                    <span class="text-gray-400 text-sm w-1/5">Type: </span>
+                                <div class="flex items-start text-xs md:text-sm">
+                                    <span class="text-gray-400 w-1/3 md:w-1/5">Type: </span>
                                     <span class="font-medium w-4/5">{{ file?.data?.type }}</span>
                                 </div>
-                                <div class="flex items-start">
-                                    <span class="text-gray-400 text-sm w-1/5">Status: </span>
+                                <div class="flex items-start text-xs md:text-sm">
+                                    <span class="text-gray-400 w-1/3 md:w-1/5">Status: </span>
                                     <div class="flex items-center">
                                         <span v-if="fileStatus === 'completed'" class="font-medium w-4/5"><Badge variant="outline" class="bg-green-500">Completed</Badge></span>
                                         <span v-if="fileStatus === 'failed'" class="font-medium w-4/5"><Badge variant="outline" class="bg-red-500">Failed</Badge></span>
