@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RateLimiter::for('pdf-processing', function () {
-            return Limit::perMinute(9);
+            return Limit::perMinute(100);
         });
     }
 }

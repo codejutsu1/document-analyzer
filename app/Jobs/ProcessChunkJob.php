@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Enums\FileStatus;
 use App\Events\FileProgressUpdated;
 use App\Events\FilesStatusUpdated;
 use App\Facades\Llm;
@@ -14,15 +13,15 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\RateLimited;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
+use Ramsey\Uuid\Uuid;
 
 class ProcessChunkJob implements ShouldQueue
 {
     use Batchable, Queueable;
 
-    public $tries = 3;
+    public $tries = 6;
 
-    public $backoff = 10;
+    public $backoff = 20;
 
     /**
      * Create a new job instance.
@@ -34,6 +33,7 @@ class ProcessChunkJob implements ShouldQueue
 
     public function middleware(): array
     {
+        // return [];
         return [
             new RateLimited('pdf-processing'),
         ];
@@ -48,11 +48,14 @@ class ProcessChunkJob implements ShouldQueue
 
         $embedding = Llm::embed($this->chunk['text']);
 
-        $uuid = Str::uuid();
+        $id = Uuid::uuid5(
+            Uuid::NAMESPACE_DNS,
+            $this->fileId.'-'.$this->chunk['chunk_index']
+        )->toString();
 
         $payload = QdrantUpsertPayload::from([
             // 'id' => $this->filename . '_chunk_' . $this->chunk['chunk_index'],
-            'id' => $uuid,
+            'id' => $id,
             'vector' => $embedding,
             'payload' => [
                 'doc_id' => $file->path,
@@ -62,7 +65,7 @@ class ProcessChunkJob implements ShouldQueue
             ],
         ]);
 
-        Log::info($uuid);
+        Log::info($id);
 
         Log::info('Sending chunk '.$this->chunk['chunk_index'].' to vector database');
 
@@ -85,14 +88,6 @@ class ProcessChunkJob implements ShouldQueue
 
         Log::error('Chunk failed: '.$exception->getMessage());
 
-        /* @phpstan-ignore-next-line */
-        $file->status = FileStatus::FAILED;
-        /* @phpstan-ignore-next-line */
-        $file->embedding_status = FileStatus::FAILED;
-        $file->save();
-
-        event(new FileProgressUpdated($file));
-
-        $this->release(10);
+        // event(new FileProgressUpdated($file));
     }
 }

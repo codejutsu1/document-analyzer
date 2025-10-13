@@ -18,7 +18,7 @@ Built with:
 
 ## How It Works (Server Side)
 - User uploads a PDF
-- Text is extracted from the PDF using ... package.
+- Text is extracted from the PDF using [Smalot PDF Parser](https://github.com/smalot/pdfparser) package.
 - The extracted text is segmented into smaller chunks for efficient processing and to meet the embedding model context.
 - Each chunk is sent to an embedding model to generate vector representations.
 - The resulting vectors are stored in a vector database for retrieval.
@@ -32,7 +32,7 @@ Built with:
     - LLM: [Gemini](https://gemini.google.com/app)
 
 - `Queues` - Each text chunk is enqueued as an individual job. Batchable jobs are grouped together and processed in parallel to optimize throughput and performance.
-- `Job Middleware` - To comply with the LLM’s rate limits, a middleware enforces a rate limit of 9 requests per minute (RPM) for job execution.
+- `Job Middleware` - To comply with the LLM’s rate limits, a middleware enforces a rate limit of 100 requests per minute (RPM) for job execution.
 - `Reverb` - A real-time communication layer that enables live tracking of job progress and interactive chatbot updates. It uses event-driven architecture with WebSockets to broadcast job state changes, logs, and chatbot messages as they occur.
 
 ## Installation

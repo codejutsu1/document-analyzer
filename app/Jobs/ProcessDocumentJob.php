@@ -39,11 +39,11 @@ class ProcessDocumentJob implements ShouldQueue
 
         $jobs = [];
 
-        $chunks = array_slice($chunks, 0, 2);
+        // $chunks = array_slice($chunks, 0, 2);
 
         // $this->file->total_chunks = $chuckCount;
         /* @phpstan-ignore-next-line */
-        $file->total_chunks = 2;
+        $file->total_chunks = $chuckCount;
         $file->save();
 
         Log::info("Started processing $chuckCount chunks");

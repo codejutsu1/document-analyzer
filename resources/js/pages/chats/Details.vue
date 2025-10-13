@@ -125,7 +125,7 @@ watch(
                 <div class="w-full md:w-[70%] h-full">
                     <div class="h-full">
                         <div class="relative h-full flex flex-col items-center justify-between">
-                            <ScrollArea v-show="isReady" ref="scrollAreaRef" class="w-full rounded-md h-[600px] md:h-[350px] p-2 mb-2">
+                            <ScrollArea v-show="isReady" ref="scrollAreaRef" class="w-full rounded-md h-[600px] md:h-[500px] p-2 mb-2">
                                 <div class="space-y-2">
                                     <div 
                                         v-for="message in localMessages" 
