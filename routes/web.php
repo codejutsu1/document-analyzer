@@ -1,14 +1,12 @@
 <?php
 
-use App\Enums\FileStatus;
-use App\Events\FilesStatusUpdated;
 use App\Http\Controllers\FileChatController;
 use App\Http\Controllers\FileChatDetailsController;
 use App\Http\Controllers\FileChatStoreController;
 use App\Http\Controllers\FileController;
-use App\Jobs\ProcessDocumentJob;
-use App\Jobs\ProcessUserQueryJob;
 use App\Models\File;
+use App\Services\Pdf\PdfService;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -31,24 +29,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::get('pdf', function () {
-    // ProcessDocumentJob::dispatch('bill');
-    // ProcessUserQueryJob::dispatch('Is Benefit of kind part of pdf?');
-
-    // FilesStatusUpdated::dispatch(File::find(1));
     $file = File::find(1);
 
-    // $file->chunking_status = FileStatus::COMPLETED;
-    // $file->embedding_status = FileStatus::ACTIVE;
+    $pdfService = app(PdfService::class);
 
-    // $file->embedding_status = FileStatus::COMPLETED;
-    // $file->storage_status = FileStatus::ACTIVE;
+    $documentText = $pdfService->getPdfText($file->path);
 
-    // $file->storage_status = FileStatus::COMPLETED;
-    // $file->save();
-    // event(new FilesStatusUpdated(File::find(1)));
+    $chunks = $pdfService->chunkText($documentText);
 
-    // event(new ProcessDocumentJob(File::find(1)));
-    ProcessDocumentJob::dispatch(File::find(1));
+    Log::info(count($chunks));
 
     dd('live');
 });

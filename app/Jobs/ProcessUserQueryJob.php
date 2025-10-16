@@ -12,10 +12,16 @@ use App\Services\VectorDatabase\Data\QdrantSearchPayload;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
+use Prism\Prism\ValueObjects\Messages\AssistantMessage;
+use Prism\Prism\ValueObjects\Messages\UserMessage;
 
 class ProcessUserQueryJob implements ShouldQueue
 {
     use Queueable;
+
+    public $tries = 3;
+
+    public $backoff = 10;
 
     /**
      * Create a new job instance.
@@ -40,23 +46,57 @@ class ProcessUserQueryJob implements ShouldQueue
 
         $results = VectorDatabase::search($payload);
 
+        Log::info(['results count' => $results]);
+
         Log::info('Results', ['results' => $results]);
 
         $context = '';
 
         foreach ($results as $i => $h) {
             $p = $h['payload'];
-            $context .= "---CHUNK {$i}---\n[doc: {$p['doc_id']}, page: {$p['page']}] \n".$p['text']."\n\n";
+
+            $pageLabel = '';
+
+            $pages = $p['pages_spanned'] ?? [];
+
+            if (is_array($pages)) {
+                if (count($pages) > 1) {
+                    $pageLabel = 'pages '.implode(', ', $pages);
+                } elseif (count($pages) === 1) {
+                    $pageLabel = 'page '.$pages[0];
+                } else {
+                    $pageLabel = 'page '.($p['page'] ?? 'N/A');
+                }
+            } else {
+                $pageLabel = 'page '.$pages;
+            }
+
+            Log::info(['pageLabel' => $pageLabel]);
+
+            $context .= "---CHUNK {$i}---\n[doc: {$p['doc_id']}, {$pageLabel}]\n".$p['text']."\n\n";
         }
 
-        $prompt = "\n\nContext:\n{$context}\nUser: {$this->message->message}\nAnswer:";
-
-        $llmResponse = Llm::prompt(prompt: $prompt);
-
-        Log::info('LLM Response', ['llmResponse' => $llmResponse]);
+        Log::info('Context', ['context' => $context]);
 
         /** @var Conversation $conversation */
         $conversation = $this->message->conversation;
+
+        $prismMessages = $conversation->messages->map(function ($message) {
+            /** @phpstan-ignore-next-line */
+            return $message->participant == MessageParticipant::USER
+                /** @phpstan-ignore-next-line */
+                ? new UserMessage($message->message)
+                /** @phpstan-ignore-next-line */
+                : new AssistantMessage($message->message);
+        })->all();
+
+        $prompt = "\n\nContext:\n{$context}\nUser: {$this->message->message}\nAnswer:";
+
+        $prismMessages[] = new UserMessage($prompt);
+
+        $llmResponse = Llm::prompt(prismMessages: $prismMessages);
+
+        Log::info('LLM Response', ['llmResponse' => $llmResponse]);
 
         $conversation->messages()->create([
             'user_id' => $this->message->user_id,

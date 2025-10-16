@@ -61,4 +61,30 @@ class QueryRequest extends Request implements HasBody
 
         return $body;
     }
+
+    protected function random(): void
+    {
+        // $response = Http::withToken(
+        //     ""
+        //   )->put(
+        //     "",
+        //     [
+        //       "vectors" => [
+        //         "size" => 384,
+        //         "distance" => "Cosine"
+        //       ]
+        //     ]
+        //   );
+
+        // $response = Http::withToken(
+        //     ""
+        //   )->put(
+        //     "",
+        //     [
+        //       "field_name" => "doc_id",
+        //       "field_schema" => "keyword"
+        //     ]
+        //   );
+
+    }
 }

@@ -19,9 +19,9 @@ class ProcessChunkJob implements ShouldQueue
 {
     use Batchable, Queueable;
 
-    public $tries = 6;
+    public $tries = 10;
 
-    public $backoff = 20;
+    public $backoff = 65;
 
     /**
      * Create a new job instance.
@@ -62,6 +62,7 @@ class ProcessChunkJob implements ShouldQueue
                 'page' => $this->chunk['page'] ?? null,
                 'chunk_index' => $this->chunk['chunk_index'],
                 'text' => $this->chunk['text'],
+                'pages_spanned' => $this->chunk['pages_spanned'],
             ],
         ]);
 

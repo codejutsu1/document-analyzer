@@ -31,11 +31,15 @@ class ProcessDocumentJob implements ShouldQueue
 
         $fileId = $file->id;
 
-        $pdfText = app(PdfService::class)->getPdfText($file->path);
+        $pdfService = app(PdfService::class);
 
-        $chunks = $this->chuckText($pdfText, 1500, 500);
+        $documentText = $pdfService->getPdfText($file->path);
+
+        $chunks = $pdfService->chunkText($documentText);
 
         $chuckCount = count($chunks);
+
+        Log::info('chunks', ['chunks' => $chuckCount]);
 
         $jobs = [];
 
@@ -64,43 +68,6 @@ class ProcessDocumentJob implements ShouldQueue
                 Log::info("Batch finished for file_id={$fileId}. processed={$batch->processedJobs()} failed={$batch->failedJobs}");
             })
             ->dispatch();
-    }
-
-    protected function chuckText(
-        string $text,
-        int $chunkSize = 3000,
-        int $overlap = 500
-    ): array {
-        $chunks = [];
-        $len = mb_strlen($text);
-
-        $start = 0;
-        $index = 0;
-
-        while ($start < $len) {
-            $end = min($start + $chunkSize, $len);
-            $chunk = mb_substr($text, $start, $end - $start);
-
-            $chunks[] = [
-                'text' => trim($chunk),
-                'chunk_index' => $index,
-                'char_start' => $start,
-                'char_end' => $end,
-            ];
-
-            $index++;
-
-            if ($end >= $len) {
-                break;
-            }
-
-            $start = $end - $overlap;
-            if ($start < 0) {
-                $start = 0;
-            }
-        }
-
-        return $chunks;
     }
 
     protected function sequenceJobs(): void

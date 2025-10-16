@@ -47,7 +47,7 @@ class QdrantDriver implements InteractWithVectorDatabase
             Log::error('Vector database search failed', [
                 'status' => $response->status(),
                 // 'body' => $response->body(),
-                // 'json' => $response->json(),
+                'json' => $response->json(),
             ]);
         }
 

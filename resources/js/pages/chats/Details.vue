@@ -26,6 +26,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import store from '@/actions/App/Http/Controllers/FileChatStoreController';
 import chatDetails from '@/actions/App/Http/Controllers/FileChatDetailsController';
 import { ref, onMounted, nextTick, watch } from 'vue';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify'
 
 const props = defineProps<{
     file: any;
@@ -64,7 +66,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: show(props?.file?.data?.uuid).url,
     },
     {
-        title: 'History of AI',
+        title: props?.file?.data?.name,
         href: show(props?.file?.data?.uuid).url,
     },
 ];
@@ -111,6 +113,11 @@ watch(
   { deep: true }
 );
 
+const renderMarkdown = (mdText: string) => {
+  const html = marked.parse(mdText || '')
+  return DOMPurify.sanitize(html as string)
+}
+
 </script>
 
 
@@ -132,10 +139,8 @@ watch(
                                         :key="message.id" class="flex" 
                                         :class="message.participant === 'user' ? 'justify-end' : 'justify-start'"
                                     >
-                                        <div class="text-white rounded-4xl p-4 max-w-[80%]  md:max-w-[70%] text-sm md:text-base" :class="message.participant === 'user' ? 'bg-zinc-800' : 'bg-gray-900'">
-                                            <p>
-                                                {{ message.message }}
-                                            </p>
+                                        <div class="text-white rounded-4xl p-4 max-w-[80%] md:max-w-[70%] text-sm md:text-base whitespace-pre-wrap" :class="message.participant === 'user' ? 'bg-zinc-800' : 'bg-gray-900'">
+                                            <div v-html="renderMarkdown(message.message)"></div>
                                         </div>
                                     </div>
                                     <div v-if="isTyping" class="relative flex items-center space-x-2 px-2 mb-4">

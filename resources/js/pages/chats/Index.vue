@@ -43,7 +43,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: show(props?.file?.data?.uuid).url,
     },
     {
-        title: 'History of AI',
+        title: props?.file?.data?.name,
         href: show(props?.file?.data?.uuid).url,
     },
 ];
