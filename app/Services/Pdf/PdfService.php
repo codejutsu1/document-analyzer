@@ -118,4 +118,19 @@ class PdfService
 
         return $chunks;
     }
+
+    public function deletePdf(string $filePath): bool
+    {
+        if (Storage::disk('public')->exists($filePath)) {
+            return Storage::disk('public')->delete($filePath);
+        }
+
+        return false;
+    }
+
+    public function deleteAllFiles(): void
+    {
+        Storage::disk('public')->deleteDirectory('files');
+        Storage::disk('public')->makeDirectory('files');
+    }
 }

@@ -70,14 +70,14 @@ class QueryRequest extends Request implements HasBody
         //     "",
         //     [
         //       "vectors" => [
-        //         "size" => 384,
+        //         "size" => 3072,
         //         "distance" => "Cosine"
         //       ]
         //     ]
         //   );
 
         // $response = Http::withToken(
-        //     ""
+        //     "/index"
         //   )->put(
         //     "",
         //     [

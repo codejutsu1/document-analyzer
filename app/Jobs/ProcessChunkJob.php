@@ -79,8 +79,6 @@ class ProcessChunkJob implements ShouldQueue
         $file->increment('processed_chunks');
 
         event(new FilesStatusUpdated($file));
-
-        // '595c678e-b6b3-4dac-8a51-b316cf03a50a';
     }
 
     public function failed(\Throwable $exception): void
