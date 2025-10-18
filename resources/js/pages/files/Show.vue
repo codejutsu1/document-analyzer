@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge'
 import {
   Item,
   ItemContent,
-  ItemDescription,
   ItemFooter,
   ItemMedia,
   ItemTitle,
@@ -143,7 +142,7 @@ onMounted(() => {
                                     Processing Document...
                                 </ItemTitle>
                                 <ItemTitle v-else>Completed</ItemTitle>
-                                <ItemDescription>{{ progressPercentage }}%</ItemDescription>
+                                <!-- <ItemDescription>{{ progressPercentage }}%</ItemDescription> -->
                             </ItemContent>
                             <ItemFooter>
                                 <Progress class="text-green-500" :model-value="progressPercentage" />
