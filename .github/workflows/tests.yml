@@ -82,6 +82,11 @@ jobs:
           DB_USER: root
         run: ./vendor/bin/pest --parallel
 
+      - name: Test SSH Connection
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'SSH OK'"
+
+
       - name: Synchronize Files To Server
         uses: easingthemes/ssh-deploy@main
         env:
