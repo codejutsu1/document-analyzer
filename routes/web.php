@@ -4,9 +4,6 @@ use App\Http\Controllers\FileChatController;
 use App\Http\Controllers\FileChatDetailsController;
 use App\Http\Controllers\FileChatStoreController;
 use App\Http\Controllers\FileController;
-use App\Models\File;
-use App\Services\Pdf\PdfService;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -26,20 +23,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('files/{file:uuid}/c/{conversation:uuid}', FileChatDetailsController::class)->name('chat.details');
 
-});
-
-Route::get('pdf', function () {
-    $file = File::find(1);
-
-    $pdfService = app(PdfService::class);
-
-    $documentText = $pdfService->getPdfText($file->path);
-
-    $chunks = $pdfService->chunkText($documentText);
-
-    Log::info(count($chunks));
-
-    dd('live');
 });
 
 require __DIR__.'/settings.php';
